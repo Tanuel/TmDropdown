@@ -1,0 +1,75 @@
+@import 'colors';
+
+.tmDropdown-wrapper *{
+    box-sizing:border-box;
+}
+.tmDropdown-wrapper{
+    box-sizing:border-box;
+    cursor:pointer;
+    position:relative;
+    background:#ffffff;
+    display:inline-block;
+    -moz-user-select:none;
+    user-select:none;
+}
+.tmDropdown-wrapper.tmDropdown-open{
+    z-index:1001;	
+}
+.tmDropdown-current{
+    border:1px solid $colorPrimary;
+    padding:2px 15px 2px 2px;
+    font-size:13.33333px;
+}
+.tmDropdown-ul{
+    position:absolute;
+    z-index:10000;
+    background:#ffffff;
+    border:1px solid #ddd;
+    width:100%;
+    max-height: 200px;
+    overflow: auto;
+    margin:0;
+    list-style-type:none;
+    padding-left:2px;
+    display:none;
+}
+.tmDropdown-open > .tmDropdown-ul{
+    display:block;
+}
+.tmDropdown-li:hover{
+    background:$colorPrimary;
+    color:$fontColorActive;
+}
+.tmDropdown-arrow{
+    position: absolute;
+    right: 1px;
+    background: white;
+    width: 14px;
+    height: 100%;
+    border-top: 1px solid $colorPrimary;
+    border-bottom: 1px solid $colorPrimary;
+}
+.tmDropdown-arrow:before{
+    content:"▼";
+    font-size:11px;
+    top: -1px;
+}
+.tmDropdown-active{
+    background-color:$colorPrimary;
+    color:$fontColorActive;
+}
+.tmDropdown-disabled{
+    color:$fontColorDisabled;
+}
+.tmDropdown-disabled:hover{
+    background-color:$colorDisabled;
+}
+
+.tmDropdown-optgroup-label {
+    font-weight: 700;
+}
+
+.tmDropdown-optgroup-options {
+    list-style-type: none;
+    padding-left: 20px;
+}
