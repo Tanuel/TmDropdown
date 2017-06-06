@@ -2,12 +2,15 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        dst: 'dist/<%= pkg.version %>',
-        jsfilename: '<%= pkg.name %>.js',
-        siteroot: 'public_html',
+        dst: 'dist',
+        jsfilename: 'TmDropdown.js',
+        siteroot: 'docs',
         clean: {
-            build: {
+            dist: {
                 src: ['<%= dst %>/*']
+            },
+            docs: {
+                src: ['<%=siteroot%>/*']
             }
         },
         concat: {

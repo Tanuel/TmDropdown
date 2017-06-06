@@ -18,7 +18,6 @@ class TmDropdown {
 
         let _this = this;
         document.body.addEventListener("mouseup", function (e) {
-            console.log(!_this._dropdown.contains(e.target));
             if (_this._dropdown !== e.target && !_this._dropdown.contains(e.target)) {
                 _this.close();
             }
