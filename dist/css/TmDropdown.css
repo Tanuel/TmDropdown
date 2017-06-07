@@ -18,7 +18,7 @@
 
 .tmDropdown-current {
   border: 1px solid #bb2222;
-  padding: 2px 15px 2px 2px;
+  padding: 5px 15px 5px 3px;
   font-size: 13.33333px;
 }
 
@@ -26,18 +26,23 @@
   position: absolute;
   z-index: 10000;
   background: #ffffff;
-  border: 1px solid #ddd;
+  border: 1px solid #bb2222;
+  border-top: 0;
   width: 100%;
   max-height: 200px;
   overflow: auto;
   margin: 0;
   list-style-type: none;
-  padding-left: 2px;
+  padding: 0;
   display: none;
 }
 
 .tmDropdown-open > .tmDropdown-ul {
   display: block;
+}
+
+.tmDropdown-li {
+  padding: 3px 2px;
 }
 
 .tmDropdown-li:hover {
@@ -84,7 +89,10 @@
 
 .tmDropdown-optgroup-options {
   list-style-type: none;
-  padding-left: 20px;
+  padding-left: 0;
+}
+.tmDropdown-optgroup-options > .tmDropdown-li {
+  padding-left: 15px;
 }
 
 /*# sourceMappingURL=TmDropdown.css.map */

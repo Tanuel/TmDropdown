@@ -14,9 +14,10 @@
  * $(selector).TmDropdown("close"); - close dropdown
  * $(selector).TmDropdown("toggle"); - open or close dropdown, depending on current state
  * $(selector).TmDropdown("destroy"); - destroy TmDropdown and show the select element
+ * $(selector).TmDropdown("select",value); - select a value
  */
 if (window.jQuery) {
-    var jqTmDropdown = function (action = undefined) {
+    var jqTmDropdown = function (action = undefined,value = undefined) {
         if (typeof action === 'undefined' || typeof action === 'object') {
             if (typeof action !== 'undefined') {
                 //TODO: Handle options
@@ -76,6 +77,16 @@ if (window.jQuery) {
                         }
                     });
                     break;
+                case "select":
+                    if(value){
+                        return this.each(function(){
+                            if (this.TmDropdown instanceof TmDropdown) {
+                                this.TmDropdown.select(value);
+                            } else {
+                                console.warn("TmDropdown not initialized on this element yet");
+                            }
+                        });
+                    }
                 default:
                     console.error("Invalid parameter " + action + " for TmDropdown");
             }
