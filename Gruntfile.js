@@ -25,7 +25,7 @@ module.exports = function (grunt) {
                 ],
                 dest: '<%= dst %>/js/<%= jsfilename %>',
                 options: {
-                    banner: ';(function (window) {\n',
+                    banner: '/*! TmDropdown v<%=pkg.version%>\n *(C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n */\n;(function (window) {\n',
                     footer: '\n})(window);'
                 }
             },
@@ -47,10 +47,16 @@ module.exports = function (grunt) {
             }
         },
         copy: {
+            cssImgs:{
+               expand:true,
+               cwd:'src',
+               src: 'css/img/*',
+               dest: '<%=dst%>'
+            },
             css: {
                 expand: true,
                 cwd: '<%= dst %>',
-                src: 'css/*.css',
+                src: 'css/**',
                 dest: '<%= siteroot %>/',
             },
             js: {

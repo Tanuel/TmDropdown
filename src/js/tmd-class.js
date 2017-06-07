@@ -13,15 +13,23 @@ class TmDropdown {
         this._domElement.parentNode.insertBefore(this._dropdown, this._domElement.nextSibling);
         this._domElement.TmDropdown = this;
 
-
-
-        let _this = this;
-        document.body.addEventListener("mouseup", function (e) {
-            if (_this._dropdown !== e.target && !_this._dropdown.contains(e.target)) {
-                _this.close();
-            }
-        });
+        //add global event listeners for automatic close
+        document.body.addEventListener("mousedown", this._closeByGlobalEvent.bind(this));
+        document.body.addEventListener("touchstart", this._closeByGlobalEvent.bind(this));
     }
+    
+    /**
+     * Event handler for global mousedown or touchstart event to close
+     * dropdown when something else is clicked
+     * 
+     * @param {Object|Event} event
+     */
+    _closeByGlobalEvent(event) {
+        if (this._dropdown !== event.target && !this._dropdown.contains(event.target)) {
+                this.close();
+        }
+    }
+    
     /**
      * Open the dropdown
      */
@@ -88,7 +96,6 @@ class TmDropdown {
      */
     _buildDropdown() {
         let select = this._domElement;
-        let _this = this;//for event handlers
         var wrapper = document.createElement("div");
         wrapper.className = 'tmDropdown-wrapper';
         //wrapper.style.width = select.offsetWidth+"px";
@@ -96,7 +103,13 @@ class TmDropdown {
 
         var current = document.createElement("div");
         current.className = 'tmDropdown-current';
-        current.innerText = select.options[select.selectedIndex].innerText;
+        //if the select doesnt have any options, set different text
+        if(select.selectedIndex !== -1){
+            current.innerText = select.options[select.selectedIndex].innerText;
+        }else{
+            current.innerText = "No Options available";
+            wrapper.style.width = "auto";
+        }
         current.addEventListener("click", this.toggle.bind(this));
 
         var arrow = document.createElement("div");

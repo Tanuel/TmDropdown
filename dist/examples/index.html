@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <title>TmDropdown | TmSnippets</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://tanuel.github.io/assets/css/style.css">
         <link rel="stylesheet" href="css/TmDropdown.css">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="js/TmDropdown.js"></script>
@@ -29,7 +30,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <h1>TmDropdown</h1>
 
 <hr>
+<code>
+document.querySelectorAll(".tmDropdownNative").forEach(function(element){
+    new TmDropdown(element);
+});
+</code>
 <section>
+    <h3>Standard</h3>
     <select class="tmDropdownNative">
         <option>option 1</option>
         <option>option 2</option>
@@ -37,6 +44,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </select>
 </section>
 <hr>
+<section>
+    <h3>Support for Optgroups</h3>
+    <select class="tmDropdownNative">
+        <option>Option without Group</option>
+        <optgroup label="Group 1">
+            <option>Option 1</option>
+            <option>Option 2</option>
+        </optgroup>
+        <optgroup label="Group 2">
+            <option>Option 3</option>
+            <option>Option 4</option>
+        </optgroup>
+    </select>
+</section>
+<hr>
+<section>
+    <h3>Empty Select</h3>
+    <select class="tmDropdownNative"></select>
+</section>
+<hr>
+<code>
+$(document).ready(function(){
+    $("select.tmDropdown").TmDropdown();
+}
+</code>
 <section>
     <select class="tmDropdownJquery">
         <option>option 1</option>
