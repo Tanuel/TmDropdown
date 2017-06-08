@@ -1,34 +1,34 @@
 <hr>
-<code>
-document.querySelectorAll(".tmDropdownNative").forEach(function(element){
+<h2>Native</h2>
+<code>document.querySelectorAll(".tmDropdown").forEach(function(element){
     new TmDropdown(element);
-});
+    });
 </code>
-<section>
-    <h3>Standard</h3>
-    <select class="tmDropdownNative">
-        <option>option 1</option>
-        <option>option 2</option>
-        <option disabled>option 3 (disabled)</option>
-    </select>
-</section>
-<hr>
-<section>
-    <h3>Support for Optgroups</h3>
-    <select class="tmDropdownNative">
-        <option>Option without Group</option>
-        <optgroup label="Group 1">
-            <option>Option 1</option>
-            <option>Option 2</option>
-        </optgroup>
-        <optgroup label="Group 2">
-            <option>Option 3</option>
-            <option>Option 4</option>
-        </optgroup>
-    </select>
-</section>
-<hr>
-<section>
-    <h3>Empty Select</h3>
-    <select class="tmDropdownNative"></select>
-</section>
+<div class="triple-section">
+    <section>
+        <h3>Standard</h3>
+        <select class="tmDropdownNative">
+            <option>option 1</option>
+            <option>option 2</option>
+            <option disabled>option 3 (disabled)</option>
+        </select>
+    </section>
+    <section>
+        <h3>Support for Optgroups</h3>
+        <select class="tmDropdownNative">
+            <option>Option without Group</option>
+            <optgroup label="Group 1">
+                <option>Option 1</option>
+                <option>Option 2</option>
+            </optgroup>
+            <optgroup label="Group 2">
+                <option>Option 3</option>
+                <option>Option 4</option>
+            </optgroup>
+        </select>
+    </section>
+    <section>
+        <h3>Empty Select</h3>
+        <select class="tmDropdownNative"></select>
+    </section>
+</div>

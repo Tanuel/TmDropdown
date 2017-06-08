@@ -25,50 +25,62 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="js/TmDropdown.js"></script>
         <script src="js/tmd-basics.js"></script>
+        <style>
+            .triple-section{
+                display:flex;
+            }
+            .triple-section > section{
+                min-width:250px;
+            }
+            .green-border{
+                border:1px solid green;
+            }
+        </style>
     </head>
     <body>
-        <h1>TmDropdown</h1>
+        <h1>TmDropdown </h1>
+        <h2>by <a href="https://tanuel.github.io">Tanuel</a></h2>
+        <p>TmDropdown is a JavaScript plugin that allows easy styling of select elements by mimicking their functionality, but providing more freedomw</p>
+        <p>This Project is still in the early stages of development, so <i>bugs may happen</i>.</p>
+        <p><a href="https://github.com/Tanuel/TmDropdown/releases/latest" target="_blank">Download here</a> or <a target="_blank" href="https://github.com/tanuel/tmdropdown"><b>view the source on Github</b></a>
 
 <hr>
-<code>
-document.querySelectorAll(".tmDropdownNative").forEach(function(element){
+<h2>Native</h2>
+<code>document.querySelectorAll(".tmDropdown").forEach(function(element){
     new TmDropdown(element);
-});
+    });
 </code>
-<section>
-    <h3>Standard</h3>
-    <select class="tmDropdownNative">
-        <option>option 1</option>
-        <option>option 2</option>
-        <option disabled>option 3 (disabled)</option>
-    </select>
-</section>
+<div class="triple-section">
+    <section>
+        <h3>Standard</h3>
+        <select class="tmDropdownNative">
+            <option>option 1</option>
+            <option>option 2</option>
+            <option disabled>option 3 (disabled)</option>
+        </select>
+    </section>
+    <section>
+        <h3>Support for Optgroups</h3>
+        <select class="tmDropdownNative">
+            <option>Option without Group</option>
+            <optgroup label="Group 1">
+                <option>Option 1</option>
+                <option>Option 2</option>
+            </optgroup>
+            <optgroup label="Group 2">
+                <option>Option 3</option>
+                <option>Option 4</option>
+            </optgroup>
+        </select>
+    </section>
+    <section>
+        <h3>Empty Select</h3>
+        <select class="tmDropdownNative"></select>
+    </section>
+</div>
 <hr>
-<section>
-    <h3>Support for Optgroups</h3>
-    <select class="tmDropdownNative">
-        <option>Option without Group</option>
-        <optgroup label="Group 1">
-            <option>Option 1</option>
-            <option>Option 2</option>
-        </optgroup>
-        <optgroup label="Group 2">
-            <option>Option 3</option>
-            <option>Option 4</option>
-        </optgroup>
-    </select>
-</section>
-<hr>
-<section>
-    <h3>Empty Select</h3>
-    <select class="tmDropdownNative"></select>
-</section>
-<hr>
-<code>
-$(document).ready(function(){
-    $("select.tmDropdown").TmDropdown();
-}
-</code>
+<h2>jQuery</h2>
+<code>$("select.tmDropdown").TmDropdown();</code>
 <section>
     <select class="tmDropdownJquery">
         <option>option 1</option>
@@ -77,6 +89,82 @@ $(document).ready(function(){
     </select>
 </section>
 
+<hr>
+<h2>Options</h2>
+<p>TmDropdown can be initialized with options</p>
+<code>var options = {
+    width: "200px",
+    wrapperClass: "green-border",
+    emptyText: "No options here"
+}
+$("select.tmDropdown").TmDropdown(options);
+//or
+new TmDropdown(domElement,options);
+</code>
+<p><b>Result:</b></p>
+
+<select class="tmDropdownJqOptions">
+    <option>option 1</option>
+    <option>option 2</option>
+    <option disabled>option 3 (disabled)</option>
+</select>
+<hr>
+<h2>Methods</h2>
+<p>A list of methods and the corresponding usage with jQuery.
+    The jQuery plugin is lightweight and will always call the corresponding
+    method in the attached TmDropdown object</p>
+<table>
+    <thead>
+        <tr>
+            <th>Method</th>
+            <th>jQuery usage</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>refresh();</td>
+            <td>$(e).TmDropdown("refresh")</td>
+            <td>Refresh the Dropdown. Use this if you changed something in the select element,
+                like added options or changed the value.</td>
+        </tr>
+        <tr>
+            <td>open();</td>
+            <td>$(e).TmDropdown("open")</td>
+            <td>Open the dropdown. Mostly for internal use.</td>
+        </tr>
+        <tr>
+            <td>close();</td>
+            <td>$(e).TmDropdown("close")</td>
+            <td>Close the dropdown. Mostly for internal use.</td>
+        </tr>
+        <tr>
+            <td>destroy();</td>
+            <td>$(e).TmDropdown("destroy")</td>
+            <td>Remove the generated dropdown from the DOM and show the actual select element</td>
+        </tr>
+        <tr>
+            <td>select(value);</td>
+            <td>$(e).TmDropdown("select",value)</td>
+            <td>Select a specific value in the dropdown. Fires a <b>change event</b></td>
+        </tr>
+        <tr>
+            <td>toggle();</td>
+            <td>$(e).TmDropdown("open")</td>
+            <td>Open or close the dropdown, depending on state. Mostly for internal use.</td>
+        </tr>
+        <tr>
+            <td>getOption(name);</td>
+            <td>$(e).TmDropdown("option",name)</td>
+            <td>Get the value of an option</td>
+        </tr>
+        <tr>
+            <td>setOption(name,value);</td>
+            <td>$(e).TmDropdown("option",name,value)</td>
+            <td>Set the value of an option. If you use this, call refresh() after.</td>
+        </tr>
+    </tbody>
+</table>
         <div>&copy; 2017 Daniel Schuster &lt;tanuel.mategi@gmail.com&gt;</div>
     </body>
 </html>

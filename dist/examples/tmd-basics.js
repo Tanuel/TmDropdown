@@ -25,6 +25,11 @@ document.addEventListener("DOMContentLoaded", function () {
 //Wait for document to be ready
 $(document).ready(function () {
     //init the plugin
-    $("select.tmDropdownJquery").tmDropdown();
-
+    $("select.tmDropdownJquery").TmDropdown();
+    var options = {
+        width: "200px",
+        wrapperClass: "green-border",
+        emptyText: "No options here"
+    }
+    $("select.tmDropdownJqOptions").TmDropdown(options);
 });

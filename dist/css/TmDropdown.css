@@ -63,10 +63,8 @@
 .tmDropdown-arrow:before {
   content: " ";
   background: url(img/select_arrow.png) center no-repeat;
-  font-size: 11px;
-  top: -1px;
   width: 10px;
-  height: 10px;
+  height: 100%;
   display: inline-block;
 }
 

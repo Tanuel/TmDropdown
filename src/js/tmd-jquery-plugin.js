@@ -6,7 +6,8 @@
  * the corresponding methods in the TmDropdown object
  * 
  * Initialization:
- * $(selector).TmDropdown();
+ * $(selector).TmDropdown(options);
+ * you can provide an object with options
  * 
  * Actions:
  * $(selector).TmDropdown("refresh"); - refresh dropdown
@@ -19,15 +20,12 @@
 if (window.jQuery) {
     var jqTmDropdown = function (action = undefined,value = undefined) {
         if (typeof action === 'undefined' || typeof action === 'object') {
-            if (typeof action !== 'undefined') {
-                //TODO: Handle options
-            }
             return this.each(function () {
                 if (this.TmDropdown instanceof TmDropdown) {
                     console.warn("TmDropdown already initialized on this element");
                     return;
                 }
-                new TmDropdown(this);
+                new TmDropdown(this,action);
 
             });
         } else {

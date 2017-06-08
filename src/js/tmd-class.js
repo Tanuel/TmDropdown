@@ -1,3 +1,9 @@
+/** ----- TmDropdown main class ----- 
+ * Available options:
+ * width - width of the wrapper
+ * wrapperClass - additional class for the tmDropdown-wrapper element
+ * @type TmDropdown
+ */
 class TmDropdown {
 
     constructor(domElement,options = undefined) {
@@ -18,8 +24,9 @@ class TmDropdown {
         this._domElement.TmDropdown = this;
 
         //add global event listeners for automatic close
-        document.body.addEventListener("mousedown", this._closeByGlobalEvent.bind(this));
-        document.body.addEventListener("touchstart", this._closeByGlobalEvent.bind(this));
+        document.documentElement.addEventListener("mousedown", this._closeByGlobalEvent.bind(this));
+        document.documentElement.addEventListener("touchstart", this._closeByGlobalEvent.bind(this));
+        window.addEventListener("blur",this.close.bind(this))
     }
     
     /**
@@ -30,9 +37,9 @@ class TmDropdown {
     getOption(key){
         switch(key){
             case 'width':
-                return this._options.width || window.getComputedStyle(this._domElement).width;
+                return this._options.width || TmDropdownConfig[key] || window.getComputedStyle(this._domElement).width;
             default:
-                return this._options[key] || '';
+                return this._options[key] || TmDropdownConfig[key];
         }
             
     }
@@ -124,7 +131,7 @@ class TmDropdown {
     _buildDropdown() {
         let select = this._domElement;
         var wrapper = document.createElement("div");
-        wrapper.className = 'tmDropdown-wrapper '+this.getOption("class");
+        wrapper.className = 'tmDropdown-wrapper '+this.getOption("wrapperClass");
         //wrapper.style.width = select.offsetWidth+"px";
         wrapper.style.width = this.getOption("width");
 
@@ -134,7 +141,7 @@ class TmDropdown {
         if(select.selectedIndex !== -1){
             current.innerText = select.options[select.selectedIndex].innerText;
         }else{
-            current.innerText = "No Options available";
+            current.innerText = this.getOption("emptyText");
             wrapper.style.width = "auto";
         }
         current.addEventListener("click", this.toggle.bind(this));
