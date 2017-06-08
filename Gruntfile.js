@@ -20,6 +20,7 @@ module.exports = function (grunt) {
             },
             jsmain: {
                 src: [
+                    'src/js/tmd-config.js', //default TmDropdown configuration
                     'src/js/tmd-class.js', //class file
                     'src/js/tmd-jquery-plugin.js' //jquery integration plugin
                 ],
@@ -41,6 +42,8 @@ module.exports = function (grunt) {
                     'src/html/header.html',
                     'src/html/examples-native.html',
                     'src/html/examples-jquery.html',
+                    'src/html/examples-options.html',
+                    'src/html/examples-methods.html',
                     'src/html/footer.html'
                 ],
                 dest: '<%=dst%>/examples/index.html'

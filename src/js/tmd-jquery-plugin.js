@@ -6,7 +6,8 @@
  * the corresponding methods in the TmDropdown object
  * 
  * Initialization:
- * $(selector).TmDropdown();
+ * $(selector).TmDropdown(options);
+ * you can provide an object with options
  * 
  * Actions:
  * $(selector).TmDropdown("refresh"); - refresh dropdown
@@ -14,19 +15,17 @@
  * $(selector).TmDropdown("close"); - close dropdown
  * $(selector).TmDropdown("toggle"); - open or close dropdown, depending on current state
  * $(selector).TmDropdown("destroy"); - destroy TmDropdown and show the select element
+ * $(selector).TmDropdown("select",value); - select a value
  */
 if (window.jQuery) {
-    var jqTmDropdown = function (action = undefined) {
+    var jqTmDropdown = function (action = undefined,value = undefined) {
         if (typeof action === 'undefined' || typeof action === 'object') {
-            if (typeof action !== 'undefined') {
-                //TODO: Handle options
-            }
             return this.each(function () {
                 if (this.TmDropdown instanceof TmDropdown) {
                     console.warn("TmDropdown already initialized on this element");
                     return;
                 }
-                new TmDropdown(this);
+                new TmDropdown(this,action);
 
             });
         } else {
@@ -76,6 +75,16 @@ if (window.jQuery) {
                         }
                     });
                     break;
+                case "select":
+                    if(value){
+                        return this.each(function(){
+                            if (this.TmDropdown instanceof TmDropdown) {
+                                this.TmDropdown.select(value);
+                            } else {
+                                console.warn("TmDropdown not initialized on this element yet");
+                            }
+                        });
+                    }
                 default:
                     console.error("Invalid parameter " + action + " for TmDropdown");
             }

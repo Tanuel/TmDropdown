@@ -1,25 +1,72 @@
-/*! TmDropdown v0.2.1
+/*! TmDropdown v0.3.1
  *(C) Daniel Schuster 2017
  */
 ;(function (window) {
+/** ----- TmDropdown default configuration ----- 
+ * default configuration/options for TmDropdown
+ */
+var TmDropdownConfig = {
+    /** Width of the wrapper **/
+    width:undefined,
+    /**additional class for the wrapper element (still contains tmDropdown-wrapper*/
+    wrapperClass: '',
+    /**Text to display if select is empty*/
+    emptyText: "No options available"
+}
+
+window.TmDropdownConfig = TmDropdownConfig;
+/** ----- TmDropdown main class ----- 
+ * Available options:
+ * width - width of the wrapper
+ * wrapperClass - additional class for the tmDropdown-wrapper element
+ * @type TmDropdown
+ */
 class TmDropdown {
 
-    constructor(domElement) {
+    constructor(domElement,options = undefined) {
         if (domElement.nodeName.toUpperCase() !== 'SELECT') {
             throw "Element is not a Select";
         }
         this._domElement = domElement;
+        if(typeof options === 'object'){
+            this._options = options;
+        }else{
+            this._options = {};
+        }
         //this._width = this._domElement.offsetWidth+"px";
         this._dropdown = this._buildDropdown();
-
         this._domElement.style.visibility = "hidden";
         this._domElement.style.position = "absolute";
         this._domElement.parentNode.insertBefore(this._dropdown, this._domElement.nextSibling);
         this._domElement.TmDropdown = this;
 
         //add global event listeners for automatic close
-        document.body.addEventListener("mousedown", this._closeByGlobalEvent.bind(this));
-        document.body.addEventListener("touchstart", this._closeByGlobalEvent.bind(this));
+        document.documentElement.addEventListener("mousedown", this._closeByGlobalEvent.bind(this));
+        document.documentElement.addEventListener("touchstart", this._closeByGlobalEvent.bind(this));
+        window.addEventListener("blur",this.close.bind(this))
+    }
+    
+    /**
+     * get an option
+     * @param {string} key
+     * @returns {string} option value
+     */
+    getOption(key){
+        switch(key){
+            case 'width':
+                return this._options.width || TmDropdownConfig[key] || window.getComputedStyle(this._domElement).width;
+            default:
+                return this._options[key] || TmDropdownConfig[key];
+        }
+            
+    }
+    /**
+     * set an option
+     * @param {string} key
+     * @param {string} value
+     */
+    setOption(key,value){
+        this._options[key] = value;
     }
     
     /**
@@ -101,9 +148,9 @@ class TmDropdown {
     _buildDropdown() {
         let select = this._domElement;
         var wrapper = document.createElement("div");
-        wrapper.className = 'tmDropdown-wrapper';
+        wrapper.className = 'tmDropdown-wrapper '+this.getOption("wrapperClass");
         //wrapper.style.width = select.offsetWidth+"px";
-        wrapper.style.width = window.getComputedStyle(select).width;
+        wrapper.style.width = this.getOption("width");
 
         var current = document.createElement("div");
         current.className = 'tmDropdown-current';
@@ -111,7 +158,7 @@ class TmDropdown {
         if(select.selectedIndex !== -1){
             current.innerText = select.options[select.selectedIndex].innerText;
         }else{
-            current.innerText = "No Options available";
+            current.innerText = this.getOption("emptyText");
             wrapper.style.width = "auto";
         }
         current.addEventListener("click", this.toggle.bind(this));
@@ -201,7 +248,8 @@ window.TmDropdown = TmDropdown;
  * the corresponding methods in the TmDropdown object
  * 
  * Initialization:
- * $(selector).TmDropdown();
+ * $(selector).TmDropdown(options);
+ * you can provide an object with options
  * 
  * Actions:
  * $(selector).TmDropdown("refresh"); - refresh dropdown
@@ -209,19 +257,17 @@ window.TmDropdown = TmDropdown;
  * $(selector).TmDropdown("close"); - close dropdown
  * $(selector).TmDropdown("toggle"); - open or close dropdown, depending on current state
  * $(selector).TmDropdown("destroy"); - destroy TmDropdown and show the select element
+ * $(selector).TmDropdown("select",value); - select a value
  */
 if (window.jQuery) {
-    var jqTmDropdown = function (action = undefined) {
+    var jqTmDropdown = function (action = undefined,value = undefined) {
         if (typeof action === 'undefined' || typeof action === 'object') {
-            if (typeof action !== 'undefined') {
-                //TODO: Handle options
-            }
             return this.each(function () {
                 if (this.TmDropdown instanceof TmDropdown) {
                     console.warn("TmDropdown already initialized on this element");
                     return;
                 }
-                new TmDropdown(this);
+                new TmDropdown(this,action);
 
             });
         } else {
@@ -271,6 +317,16 @@ if (window.jQuery) {
                         }
                     });
                     break;
+                case "select":
+                    if(value){
+                        return this.each(function(){
+                            if (this.TmDropdown instanceof TmDropdown) {
+                                this.TmDropdown.select(value);
+                            } else {
+                                console.warn("TmDropdown not initialized on this element yet");
+                            }
+                        });
+                    }
                 default:
                     console.error("Invalid parameter " + action + " for TmDropdown");
             }

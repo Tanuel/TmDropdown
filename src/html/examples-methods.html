@@ -1,0 +1,57 @@
+<hr>
+<h2>Methods</h2>
+<p>A list of methods and the corresponding usage with jQuery.
+    The jQuery plugin is lightweight and will always call the corresponding
+    method in the attached TmDropdown object</p>
+<table>
+    <thead>
+        <tr>
+            <th>Method</th>
+            <th>jQuery usage</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>refresh();</td>
+            <td>$(e).TmDropdown("refresh")</td>
+            <td>Refresh the Dropdown. Use this if you changed something in the select element,
+                like added options or changed the value.</td>
+        </tr>
+        <tr>
+            <td>open();</td>
+            <td>$(e).TmDropdown("open")</td>
+            <td>Open the dropdown. Mostly for internal use.</td>
+        </tr>
+        <tr>
+            <td>close();</td>
+            <td>$(e).TmDropdown("close")</td>
+            <td>Close the dropdown. Mostly for internal use.</td>
+        </tr>
+        <tr>
+            <td>destroy();</td>
+            <td>$(e).TmDropdown("destroy")</td>
+            <td>Remove the generated dropdown from the DOM and show the actual select element</td>
+        </tr>
+        <tr>
+            <td>select(value);</td>
+            <td>$(e).TmDropdown("select",value)</td>
+            <td>Select a specific value in the dropdown. Fires a <b>change event</b></td>
+        </tr>
+        <tr>
+            <td>toggle();</td>
+            <td>$(e).TmDropdown("open")</td>
+            <td>Open or close the dropdown, depending on state. Mostly for internal use.</td>
+        </tr>
+        <tr>
+            <td>getOption(name);</td>
+            <td>$(e).TmDropdown("option",name)</td>
+            <td>Get the value of an option</td>
+        </tr>
+        <tr>
+            <td>setOption(name,value);</td>
+            <td>$(e).TmDropdown("option",name,value)</td>
+            <td>Set the value of an option. If you use this, call refresh() after.</td>
+        </tr>
+    </tbody>
+</table>
