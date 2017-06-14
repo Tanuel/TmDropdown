@@ -1,9 +1,13 @@
 module.exports = function (grunt) {
+
+    //import closure compiler
+    require('google-closure-compiler').grunt(grunt);
+
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         dst: 'dist',
-        jsfilename: 'TmDropdown.js',
+        projectName: 'TmDropdown',
         siteroot: 'docs',
         clean: {
             dist: {
@@ -24,10 +28,10 @@ module.exports = function (grunt) {
                     'src/js/tmd-class.js', //class file
                     'src/js/tmd-jquery-plugin.js' //jquery integration plugin
                 ],
-                dest: '<%= dst %>/js/<%= jsfilename %>',
+                dest: '<%= dst %>/js/<%= projectName %>.js',
                 options: {
-                    banner: '/*! TmDropdown v<%=pkg.version%>\n *(C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n */\n;(function (window) {\n',
-                    footer: '\n})(window);'
+                    banner: '/*! TmDropdown v<%=pkg.version%>\n *(C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n */\n;(function (window,document) {\n',
+                    footer: '\n})(window,document);'
                 }
             },
             jsexamples: {
@@ -50,11 +54,11 @@ module.exports = function (grunt) {
             }
         },
         copy: {
-            cssImgs:{
-               expand:true,
-               cwd:'src',
-               src: 'css/img/*',
-               dest: '<%=dst%>'
+            cssImgs: {
+                expand: true,
+                cwd: 'src',
+                src: 'css/img/*',
+                dest: '<%=dst%>'
             },
             css: {
                 expand: true,
@@ -65,7 +69,7 @@ module.exports = function (grunt) {
             js: {
                 expand: true,
                 cwd: '<%= dst %>',
-                src: 'js/<%= jsfilename %>',
+                src: 'js/<%= projectName %>.js',
                 dest: '<%= siteroot %>/'
             },
             examples: {
@@ -85,14 +89,17 @@ module.exports = function (grunt) {
                 }
             }
         },
-        uglify: {
-            options: {
-                // the banner is inserted at the top of the output
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n',
-            },
-            dist: {
+        'closure-compiler': {
+            convertToPrototype: {
                 files: {
-                    'dist/<%= pkg.version %>/<%= pkg.name %>.<%= pkg.version %>.min.js': ['<%= concat.dist.dest %>']
+                    'bin/<%=projectName%>-v<%= pkg.version %>.proto.js': ['dist/js/<%=projectName%>.js']
+                },
+                options: {
+                    compilation_level: 'WHITESPACE_ONLY',
+                    language_in: 'ECMASCRIPT6_STRICT',
+                    formatting: 'pretty_print',
+                    create_source_map: 'bin/<%=projectName%>-v<%= pkg.version %>.proto.js.map',
+                    output_wrapper: '%output%\n//# sourceMappingURL=<%=projectName%>-v<%= pkg.version %>.proto.js.map'
                 }
             }
         }
@@ -102,8 +109,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-sass');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
 
     //grunt.registerTask('clean', ['clean']);
     grunt.registerTask('build', ['concat', 'sass', 'copy']);
+    grunt.registerTask('clCompile', ['closure-compiler']);
 };

@@ -1,16 +1,16 @@
-/*! TmDropdown v0.3.1
+/*! TmDropdown v0.3.2
  *(C) Daniel Schuster 2017
  */
-;(function (window) {
+;(function (window,document) {
 /** ----- TmDropdown default configuration ----- 
  * default configuration/options for TmDropdown
  */
 var TmDropdownConfig = {
-    /** Width of the wrapper **/
+    /** A fixed width for the wrapper. You can use any valid CSS-Value here, such as 100%, 130px or auto (auto is not recommended). **/
     width:undefined,
-    /**additional class for the wrapper element (still contains tmDropdown-wrapper*/
+    /**additional class for the wrapper element (still contains tmDropdown-wrapper)*/
     wrapperClass: '',
-    /**Text to display if select is empty*/
+    /**A text to display if the select is empty / doesnt have any options<*/
     emptyText: "No options available"
 }
 
@@ -23,14 +23,14 @@ window.TmDropdownConfig = TmDropdownConfig;
  */
 class TmDropdown {
 
-    constructor(domElement,options = undefined) {
+    constructor(domElement, options = undefined) {
         if (domElement.nodeName.toUpperCase() !== 'SELECT') {
             throw "Element is not a Select";
         }
         this._domElement = domElement;
-        if(typeof options === 'object'){
-            this._options = options;
-        }else{
+        if (typeof options === 'object') {
+            this._options = Object.assign({},TmDropdownConfig,options);
+        } else {
             this._options = {};
         }
         //this._width = this._domElement.offsetWidth+"px";
@@ -43,32 +43,32 @@ class TmDropdown {
         //add global event listeners for automatic close
         document.documentElement.addEventListener("mousedown", this._closeByGlobalEvent.bind(this));
         document.documentElement.addEventListener("touchstart", this._closeByGlobalEvent.bind(this));
-        window.addEventListener("blur",this.close.bind(this))
+        window.addEventListener("blur", this.close.bind(this))
     }
-    
+
     /**
      * get an option
      * @param {string} key
      * @returns {string} option value
      */
-    getOption(key){
-        switch(key){
+    getOption(key) {
+        switch (key) {
             case 'width':
                 return this._options.width || TmDropdownConfig[key] || window.getComputedStyle(this._domElement).width;
             default:
                 return this._options[key] || TmDropdownConfig[key];
         }
-            
+
     }
     /**
      * set an option
      * @param {string} key
      * @param {string} value
      */
-    setOption(key,value){
+    setOption(key, value) {
         this._options[key] = value;
     }
-    
+
     /**
      * Event handler for global mousedown or touchstart event to close
      * dropdown when something else is clicked
@@ -77,23 +77,34 @@ class TmDropdown {
      */
     _closeByGlobalEvent(event) {
         if (this._dropdown !== event.target && !this._dropdown.contains(event.target)) {
-                this.close();
+            this.close();
         }
     }
-    
+
     /**
      * Open the dropdown
      */
     open() {
         this._dropdown.classList.add("tmDropdown-open");
+        let selectedElement = this._dropdown.getElementsByClassName("tmDropdown-active")[0];
+        if (selectedElement) {
+            this._optionsUL.scrollTop = selectedElement.offsetTop - (this._optionsUL.offsetHeight / 2);
+        }
+        //If the dropdown is too far to the bottom of the screen, open it to the top
+        if(this._optionsUL.getBoundingClientRect().bottom > window.innerHeight){
+             this._dropdown.classList.add("tmDropdown-open-top");
+        }else{
+            this._dropdown.classList.remove("tmDropdown-open-top");
+        }
+
     }
     /**
      * Close the dropdown
      */
     close() {
-        this._dropdown.classList.remove("tmDropdown-open");
+        this._dropdown.classList.remove("tmDropdown-open","tmDropdown-open-top");
     }
-    
+
     /**
      * Open or close the dropdown, depending on current state
      */
@@ -104,7 +115,7 @@ class TmDropdown {
             this.open();
         }
     }
-    
+
     /**
      * Refresh content in the dropdown
      */
@@ -113,7 +124,7 @@ class TmDropdown {
         this._dropdown = this._buildDropdown();
         this._domElement.parentNode.insertBefore(this._dropdown, this._domElement.nextSibling);
     }
-    
+
     /**
      * Remove TmDropdown from DOM and show the select element
      */
@@ -123,7 +134,7 @@ class TmDropdown {
         this._domElement.style.position = "";
         delete this._domElement.TmDropdown;
     }
-    
+
     /**
      * Select a value and refresh the dropdown
      * Will dispatch a change Event
@@ -136,10 +147,9 @@ class TmDropdown {
         var changeEvent = new Event('change', {bubbles: true});
         this._domElement.dispatchEvent(changeEvent);
     }
-    
+
     /**
      * Builds the dropdown DOM element
-     * 
      * 
      * @returns {Element}
      * HTML div element with dropdown content
@@ -148,26 +158,21 @@ class TmDropdown {
     _buildDropdown() {
         let select = this._domElement;
         var wrapper = document.createElement("div");
-        wrapper.className = 'tmDropdown-wrapper '+this.getOption("wrapperClass");
-        //wrapper.style.width = select.offsetWidth+"px";
+        wrapper.className = 'tmDropdown-wrapper ' + this.getOption("wrapperClass");
         wrapper.style.width = this.getOption("width");
 
         var current = document.createElement("div");
         current.className = 'tmDropdown-current';
         //if the select doesnt have any options, set different text
-        if(select.selectedIndex !== -1){
+        if (select.selectedIndex !== -1) {
             current.innerText = select.options[select.selectedIndex].innerText;
-        }else{
+        } else {
             current.innerText = this.getOption("emptyText");
             wrapper.style.width = "auto";
         }
         current.addEventListener("click", this.toggle.bind(this));
 
-        var arrow = document.createElement("div");
-        arrow.className = "tmDropdown-arrow";
-        arrow.addEventListener("click", this.toggle.bind(this));
-
-        var ul = document.createElement("ul");
+        var ul = this._optionsUL = document.createElement("ul");
         ul.className = 'tmDropdown-ul';
 
         var children = this._domElement.children;
@@ -180,12 +185,11 @@ class TmDropdown {
             }
         }
 
-        wrapper.appendChild(arrow);
         wrapper.appendChild(current);
         wrapper.appendChild(ul);
         return wrapper;
     }
-    
+
     /**
      * Create a list element for an option
      * 
@@ -338,4 +342,4 @@ if (window.jQuery) {
     //create alias for backwards compatibility
     window.jQuery.fn.tmDropdown = jqTmDropdown;
 }
-})(window);
+})(window,document);

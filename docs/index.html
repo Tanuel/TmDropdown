@@ -35,14 +35,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             .green-border{
                 border:1px solid green;
             }
+            table h2{
+                margin:0;
+            }
         </style>
     </head>
     <body>
         <h1>TmDropdown </h1>
         <h2>by <a href="https://tanuel.github.io">Tanuel</a></h2>
-        <p>TmDropdown is a JavaScript plugin that allows easy styling of select elements by mimicking their functionality, but providing more freedomw</p>
+        <p>TmDropdown is a JavaScript plugin that allows easy styling of select elements by mimicking their functionality, but providing more freedom</p>
         <p>This Project is still in the early stages of development, so <i>bugs may happen</i>.</p>
-        <p><a href="https://github.com/Tanuel/TmDropdown/releases/latest" target="_blank">Download here</a> or <a target="_blank" href="https://github.com/tanuel/tmdropdown"><b>view the source on Github</b></a>
+        <p><b><a href="https://github.com/Tanuel/TmDropdown/releases/latest" target="_blank">Download here</a></b> or <a target="_blank" href="https://github.com/tanuel/tmdropdown"><b>view the source on Github</b></a>
 
 <hr>
 <h2>Native</h2>
@@ -57,6 +60,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <option>option 1</option>
             <option>option 2</option>
             <option disabled>option 3 (disabled)</option>
+            <option>option 4</option>
+            <option>option 5</option>
+            <option>option 6</option>
+            <option>option 7</option>
+            <option>option 8</option>
+            <option>option 9</option>
+            <option>option 10</option>
+            <option>option 11</option>
+            <option>option 12</option>
+            <option>option 13</option>
+            <option>option 14</option>
+            <option>option 15</option>
+            <option>option 16</option>
+            <option>option 17</option>
+            <option>option 18</option>
+            <option>option 19</option>
+            <option>option 20</option>
+            <option>option 21</option>
+            <option>option 22</option>
+            <option>option 23</option>
+            <option>option 24</option>
+            <option>option 25</option>
+            <option>option 26</option>
+            <option>option 27</option>
+            <option>option 28</option>
         </select>
     </section>
     <section>
@@ -109,19 +137,20 @@ new TmDropdown(domElement,options);
     <option disabled>option 3 (disabled)</option>
 </select>
 <hr>
-<h2>Methods</h2>
-<p>A list of methods and the corresponding usage with jQuery.
+<h2>Reference</h2>
+<p>A list of methods and options and the corresponding usage with jQuery.
     The jQuery plugin is lightweight and will always call the corresponding
     method in the attached TmDropdown object</p>
 <table>
-    <thead>
+    <tbody>
         <tr>
-            <th>Method</th>
+            <td colspan='3'><h2>Methods</h2></td>
+        </tr>
+        <tr>
+            <th>Method name</th>
             <th>jQuery usage</th>
             <th>Description</th>
         </tr>
-    </thead>
-    <tbody>
         <tr>
             <td>refresh();</td>
             <td>$(e).TmDropdown("refresh")</td>
@@ -163,8 +192,34 @@ new TmDropdown(domElement,options);
             <td>$(e).TmDropdown("option",name,value)</td>
             <td>Set the value of an option. If you use this, call refresh() after.</td>
         </tr>
+        <tr>
+            <td colspan='3'><h2> Options</h2></td>
+        </tr>
+        <tr>
+            <th>Option name/key</th>
+            <th>Default value</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>emptyText | string</td>
+            <td>"No options available"</td>
+            <td>A text to display if the select is empty / doesnt have any options</td>
+        </tr>
+        <tr>
+            <td>width | string</td>
+            <td>undefined</td>
+            <td>A fixed width for the wrapper. You can use any valid CSS-Value here, such as 100%, 130px or auto (auto is not recommended).
+                <br>If no width is specified, TmDropdown will try to calculate the width of the original select, which works quite ok most of the times.
+            </td>
+        </tr>
+        <tr>
+            <td>wrapperClass | string</td>
+            <td>" " (empty string)</td>
+            <td>Additional class for the wrapper element (still contains ".tmDropdown-wrapper")</td>
+        </tr>
     </tbody>
 </table>
+        <hr>
         <div>&copy; 2017 Daniel Schuster &lt;tanuel.mategi@gmail.com&gt;</div>
     </body>
 </html>

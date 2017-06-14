@@ -1,17 +1,18 @@
 <hr>
-<h2>Methods</h2>
-<p>A list of methods and the corresponding usage with jQuery.
+<h2>Reference</h2>
+<p>A list of methods and options and the corresponding usage with jQuery.
     The jQuery plugin is lightweight and will always call the corresponding
     method in the attached TmDropdown object</p>
 <table>
-    <thead>
+    <tbody>
         <tr>
-            <th>Method</th>
+            <td colspan='3'><h2>Methods</h2></td>
+        </tr>
+        <tr>
+            <th>Method name</th>
             <th>jQuery usage</th>
             <th>Description</th>
         </tr>
-    </thead>
-    <tbody>
         <tr>
             <td>refresh();</td>
             <td>$(e).TmDropdown("refresh")</td>
@@ -52,6 +53,31 @@
             <td>setOption(name,value);</td>
             <td>$(e).TmDropdown("option",name,value)</td>
             <td>Set the value of an option. If you use this, call refresh() after.</td>
+        </tr>
+        <tr>
+            <td colspan='3'><h2> Options</h2></td>
+        </tr>
+        <tr>
+            <th>Option name/key</th>
+            <th>Default value</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>emptyText | string</td>
+            <td>"No options available"</td>
+            <td>A text to display if the select is empty / doesnt have any options</td>
+        </tr>
+        <tr>
+            <td>width | string</td>
+            <td>undefined</td>
+            <td>A fixed width for the wrapper. You can use any valid CSS-Value here, such as 100%, 130px or auto (auto is not recommended).
+                <br>If no width is specified, TmDropdown will try to calculate the width of the original select, which works quite ok most of the times.
+            </td>
+        </tr>
+        <tr>
+            <td>wrapperClass | string</td>
+            <td>" " (empty string)</td>
+            <td>Additional class for the wrapper element (still contains ".tmDropdown-wrapper")</td>
         </tr>
     </tbody>
 </table>

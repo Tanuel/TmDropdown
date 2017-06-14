@@ -2,11 +2,11 @@
  * default configuration/options for TmDropdown
  */
 var TmDropdownConfig = {
-    /** Width of the wrapper **/
+    /** A fixed width for the wrapper. You can use any valid CSS-Value here, such as 100%, 130px or auto (auto is not recommended). **/
     width:undefined,
-    /**additional class for the wrapper element (still contains tmDropdown-wrapper*/
+    /**additional class for the wrapper element (still contains tmDropdown-wrapper)*/
     wrapperClass: '',
-    /**Text to display if select is empty*/
+    /**A text to display if the select is empty / doesnt have any options<*/
     emptyText: "No options available"
 }
 
