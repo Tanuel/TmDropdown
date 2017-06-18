@@ -30,7 +30,7 @@ module.exports = function (grunt) {
                 ],
                 dest: '<%= dst %>/js/<%= projectName %>.js',
                 options: {
-                    banner: '/*! TmDropdown v<%=pkg.version%>\n *(C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n */\n;(function (window,document) {\n',
+                    banner: '/*! TmDropdown v<%=pkg.version%>\n *(C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n */\n;(function (window,document) {\n\t"use strict;"\n',
                     footer: '\n})(window,document);'
                 }
             },

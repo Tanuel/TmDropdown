@@ -144,6 +144,28 @@ new TmDropdown(domElement,options);
 <table>
     <tbody>
         <tr>
+            <td colspan='3'><h2>Properties</h2></td>
+        </tr>
+        <tr>
+            <th>Property name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>isOpen</td>
+            <td>boolean</td>
+            <td>Tells if the Dropdown is currently opened.
+               (Implemented for internal use, but also available externally because why not)</td>
+        </tr>
+        <tr>
+            <td>isEmpty</td>
+            <td>boolean</td>
+            <td>Tells if the Dropdown contains any options.
+                This accesses the original select and may be inaccurate if
+                options have changed, but the TmDropdown hasn't been refreshed.
+                (Implemented for internal use, but also available externally because why not)</td>
+        </tr>
+        <tr>
             <td colspan='3'><h2>Methods</h2></td>
         </tr>
         <tr>
@@ -181,6 +203,11 @@ new TmDropdown(domElement,options);
             <td>toggle();</td>
             <td>$(e).TmDropdown("open")</td>
             <td>Open or close the dropdown, depending on state. Mostly for internal use.</td>
+        </tr>
+        <tr>
+            <td>repositionOptionsUl</td>
+            <td>$(e).TmDropdown("reposition")</td>
+            <td>Reposition the Dropdown in case the DOM layout has changed while the dropdown is open.</td>
         </tr>
         <tr>
             <td>getOption(name);</td>

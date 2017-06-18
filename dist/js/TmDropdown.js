@@ -1,18 +1,70 @@
-/*! TmDropdown v0.3.2
+/*! TmDropdown v0.3.3
  *(C) Daniel Schuster 2017
  */
 ;(function (window,document) {
+	"use strict;"
 /** ----- TmDropdown default configuration ----- 
  * default configuration/options for TmDropdown
  */
 var TmDropdownConfig = {
-    /** A fixed width for the wrapper. You can use any valid CSS-Value here, such as 100%, 130px or auto (auto is not recommended). **/
-    width:undefined,
+    /**Indicates if the Dropdown should get closed when the document gets scrolled.
+     * If false, the dropdown will move with the document, but can cause performance issues*/
+    closeOnScroll: true,
+    /**A text to display if the select is empty / doesnt have any options<*/
+    emptyText: "No options available",
+    /** A fixed width for the wrapper. You can use any valid CSS-Value here,
+     * such as 100%, 130px or auto (auto is not recommended). **/
+    width: undefined,
     /**additional class for the wrapper element (still contains tmDropdown-wrapper)*/
     wrapperClass: '',
-    /**A text to display if the select is empty / doesnt have any options<*/
-    emptyText: "No options available"
-}
+    /**Callback for when the TmDropdown close() method is called.
+     * This gets called at the start of the method. If the callback returns
+     * false, the method will abort and nothing happens.
+     * The callback gets passed a parameter with the instance of TmDropdown.
+     * This corresponds to the select element.
+     * @type function
+     */
+    onClose: undefined,
+    /**Callback for when the TmDropdown destroy() method is called.
+     * This gets called at the start of the method. If the callback returns
+     * false, the method will abort and the dropdown will not get destroyed.
+     * The callback gets passed a parameter with the instance of TmDropdown.
+     * This corresponds to the select element
+     * @type function
+     */
+    onDestroy: undefined,
+    /**Callback for when the TmDropdown open() method is called.
+     * This gets called at the start of the method. If the callback returns
+     * false, the method will abort and nothing happens.
+     * The callback gets passed a parameter with the instance of TmDropdown.
+     * This corresponds to the select element
+     * @type function
+     */
+    onOpen: undefined,
+    /**Callback for when the TmDropdown select() method is called.
+     * This gets called at the start of the method. If the callback returns
+     * false, the method will abort and nothing happens. (Value doesnt get changed)
+     * The callback gets passed two parameters:
+     * first: instance of TmDropdown
+     * second: Selected value
+     * This corresponds to the select element
+     * @type function
+     */
+    onOptionSelected:undefined,
+    /**Callback method to call AFTER the TmDropdown refresh() method has finished
+     * building the dropdown. Anything returned by the callback will be ignored.
+     * The callback gets passed a parameter with the instance of TmDropdown.
+     * This corresponds to the select element
+     * @type function
+     */
+    onRefresh: undefined,
+    /**Callback to call after the TmDropdown has initially finished building.
+     * This callback will only be called once at the end of the constructor method.
+     * This corresponds to the select element
+     * @type function
+     */
+    onRendered: undefined
+};
 
 window.TmDropdownConfig = TmDropdownConfig;
 /** ----- TmDropdown main class ----- 
@@ -41,11 +93,62 @@ class TmDropdown {
         this._domElement.TmDropdown = this;
 
         //add global event listeners for automatic close
+        //close when somewhere else is clicked or tapped
         document.documentElement.addEventListener("mousedown", this._closeByGlobalEvent.bind(this));
         document.documentElement.addEventListener("touchstart", this._closeByGlobalEvent.bind(this));
-        window.addEventListener("blur", this.close.bind(this))
+        //close when the window is left
+        window.addEventListener("blur", this.close.bind(this));
+        if(this.getOption("closeOnScroll")){
+            window.addEventListener("scroll",this._closeByGlobalEvent.bind(this),true);
+        }else{
+            window.addEventListener("scroll",this._repositionByGlobalEvent.bind(this),true);
+        }
+        
+        //call the onRendered callback
+        this._callCallback("Rendered");
     }
-
+    
+    /**
+     * indicates wether the dropdown is currently opened or not
+     * @type boolean
+     */
+    get isOpen(){
+        if(this._dropdown.classList.contains("tmDropdown-open")){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    /**
+     * indicates if the dropdown contains any options
+     * @type boolean
+     */
+    get isEmpty(){
+        if(this._domElement.children.length === 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    /**
+     * Wrapper function for callbacks. Checks if the callback is a function and 
+     * then calls it
+     * @param {string} name
+     * Name of callback (without on, like "Open" or "Rendered")
+     * @param {mixed} param
+     * a secondary parameter to be passed to the callback
+     * @returns {mixed}
+     * returns the return value of the callback
+     */
+    _callCallback(name,param = undefined){
+        if(typeof this.getOption("on"+name) === 'function'){
+            let callback = this.getOption("on"+name).bind(this._domElement,this,param)
+            return callback();
+        }
+    }
+    
     /**
      * get an option
      * @param {string} key
@@ -76,37 +179,76 @@ class TmDropdown {
      * @param {Object|Event} event
      */
     _closeByGlobalEvent(event) {
-        if (this._dropdown !== event.target && !this._dropdown.contains(event.target)) {
+        if (this._dropdown !== event.target && !this._dropdown.contains(event.target)
+            && this._optionsUL !== event.target&& !this._optionsUL.contains(event.target)) {
             this.close();
         }
     }
 
+
+    _repositionByGlobalEvent(ev){
+        if(this._optionsUL !== ev.target && !this._optionsUL.contains(ev.target)){
+            this.repositionOptionsUL();
+        }
+    }
+    repositionOptionsUL(){
+        if(this.isOpen){
+            let rect = this._dropdown.getBoundingClientRect();
+            let cssString = "position:fixed;display:block;left:"+rect.left+"px;top:"+rect.bottom+"px;width:"+rect.width+"px";
+            document.body.appendChild(this._optionsUL);
+            this._optionsUL.style.cssText = cssString;
+
+            //If the dropdown is too far to the bottom of the screen, open it to the top
+            if(this._optionsUL.getBoundingClientRect().bottom > window.innerHeight){
+                let rectUL = this._optionsUL.getBoundingClientRect();
+                this._optionsUL.style.top = (rect.top - rectUL.height)+"px";
+                this._optionsUL.classList.add("tmDropdown-ul-top");
+            }else{
+                this._optionsUL.classList.remove("tmDropdown-ul-top");
+            }
+        }
+    }
+
     /**
-     * Open the dropdown
+     * Open the dropdown. 
+     * the onOpen callback wont get called if the dropdown is empty!
      */
     open() {
+        if(this.isEmpty){
+            return;
+        }
+        if(this._callCallback("Open") === false){
+            return;
+        }
         this._dropdown.classList.add("tmDropdown-open");
-        let selectedElement = this._dropdown.getElementsByClassName("tmDropdown-active")[0];
+        this.repositionOptionsUL();
+        
+        //scroll to selected element
+        let selectedElement = this._optionsUL.getElementsByClassName("tmDropdown-active")[0];
         if (selectedElement) {
             this._optionsUL.scrollTop = selectedElement.offsetTop - (this._optionsUL.offsetHeight / 2);
         }
-        //If the dropdown is too far to the bottom of the screen, open it to the top
-        if(this._optionsUL.getBoundingClientRect().bottom > window.innerHeight){
-             this._dropdown.classList.add("tmDropdown-open-top");
-        }else{
-            this._dropdown.classList.remove("tmDropdown-open-top");
-        }
-
     }
     /**
-     * Close the dropdown
+     * Close the dropdown.
+     * The onClose callback wont get called, if the Dropdown is already closed!
      */
     close() {
+        if(!this.isOpen){
+            return;
+        }
+        if(this._callCallback("Close") === false){
+            return;
+        }
         this._dropdown.classList.remove("tmDropdown-open","tmDropdown-open-top");
+        this._dropdown.appendChild(this._optionsUL);
+        this._optionsUL.style.cssText = '';
     }
 
     /**
      * Open or close the dropdown, depending on current state
+     * This method wont trigger callbacks itsself, but calls for open or close and
+     * triggers those callbacks
      */
     toggle() {
         if (this._dropdown.classList.contains("tmDropdown-open")) {
@@ -120,15 +262,21 @@ class TmDropdown {
      * Refresh content in the dropdown
      */
     refresh() {
+        this._optionsUL.parentNode.removeChild(this._optionsUL);
         this._dropdown.parentNode.removeChild(this._dropdown);
         this._dropdown = this._buildDropdown();
         this._domElement.parentNode.insertBefore(this._dropdown, this._domElement.nextSibling);
+        
+        this._callCallback("Refresh");
     }
 
     /**
      * Remove TmDropdown from DOM and show the select element
      */
     destroy() {
+        if(this._callCallback("Destroy")  === false){
+            return
+        }
         this._dropdown.parentNode.removeChild(this._dropdown);
         this._domElement.style.visibility = "";
         this._domElement.style.position = "";
@@ -142,12 +290,24 @@ class TmDropdown {
      * @param {string} value
      */
     select(value) {
+        if(this._callCallback("OptionSelected",value) === false){
+            return
+        }
         this._domElement.value = value;
         this.refresh();
         var changeEvent = new Event('change', {bubbles: true});
         this._domElement.dispatchEvent(changeEvent);
     }
-
+    
+    _selectByClickEvent(ev){
+        let el = ev.target;
+        console.log(ev);
+        if (typeof el.dataset.value !== 'undefined') {
+                this.select(el.dataset.value);
+                this.close();
+        }
+    }
+    
     /**
      * Builds the dropdown DOM element
      * 
@@ -184,6 +344,8 @@ class TmDropdown {
                 ul.appendChild(this._buildOptgroup(c));
             }
         }
+        
+        ul.addEventListener("click",this._selectByClickEvent.bind(this),true);
 
         wrapper.appendChild(current);
         wrapper.appendChild(ul);
@@ -205,13 +367,6 @@ class TmDropdown {
         var disabled = option.disabled ? ' tmDropdown-disabled' : '';
         li.className = 'tmDropdown-li' + selected + disabled;
         li.dataset.value = option.value;
-        let _this = this;
-        if (!option.disabled) {
-            li.addEventListener("click", function () {
-                _this.select(this.dataset.value);
-                _this.close();
-            });
-        }
         return li;
     }
     /**
@@ -271,7 +426,11 @@ if (window.jQuery) {
                     console.warn("TmDropdown already initialized on this element");
                     return;
                 }
-                new TmDropdown(this,action);
+                try{
+                    new TmDropdown(this,action);
+                }catch(error){
+                    console.warn("Element "+this+" is not a Select element and will be skipped!");
+                }
 
             });
         } else {
@@ -316,6 +475,15 @@ if (window.jQuery) {
                     return this.each(function () {
                         if (this.TmDropdown instanceof TmDropdown) {
                             this.TmDropdown.destroy();
+                        } else {
+                            console.warn("TmDropdown not initialized on this element yet");
+                        }
+                    });
+                    break;
+                case "reposition":
+                    return this.each(function () {
+                        if (this.TmDropdown instanceof TmDropdown) {
+                            this.TmDropdown.repositionOptionsUL();
                         } else {
                             console.warn("TmDropdown not initialized on this element yet");
                         }

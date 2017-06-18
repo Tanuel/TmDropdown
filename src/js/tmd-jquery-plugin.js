@@ -25,7 +25,11 @@ if (window.jQuery) {
                     console.warn("TmDropdown already initialized on this element");
                     return;
                 }
-                new TmDropdown(this,action);
+                try{
+                    new TmDropdown(this,action);
+                }catch(error){
+                    console.warn("Element "+this+" is not a Select element and will be skipped!");
+                }
 
             });
         } else {
@@ -70,6 +74,15 @@ if (window.jQuery) {
                     return this.each(function () {
                         if (this.TmDropdown instanceof TmDropdown) {
                             this.TmDropdown.destroy();
+                        } else {
+                            console.warn("TmDropdown not initialized on this element yet");
+                        }
+                    });
+                    break;
+                case "reposition":
+                    return this.each(function () {
+                        if (this.TmDropdown instanceof TmDropdown) {
+                            this.TmDropdown.repositionOptionsUL();
                         } else {
                             console.warn("TmDropdown not initialized on this element yet");
                         }
