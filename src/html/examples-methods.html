@@ -85,9 +85,15 @@
             <td colspan='3'><h2> Options</h2></td>
         </tr>
         <tr>
-            <th>Option name/key</th>
+            <th>Option name | type</th>
             <th>Default value</th>
             <th>Description</th>
+        </tr>
+        <tr>
+            <td>closeOnScroll | boolean</td>
+            <td>true</td>
+            <td>Indicates if the Dropdown should get closed when the document gets scrolled.<br>
+                If false, the dropdown will move with the document, but can cause performance issues</td>
         </tr>
         <tr>
             <td>emptyText | string</td>
@@ -105,6 +111,57 @@
             <td>wrapperClass | string</td>
             <td>" " (empty string)</td>
             <td>Additional class for the wrapper element (still contains ".tmDropdown-wrapper")</td>
+        </tr>
+        <tr>
+            <th>Callback Options</th>
+            <th colspan="2">No defaults</th>
+        </tr>
+        <tr>
+            <td>onClose</td>
+            <td colspan="2">Callback for when the TmDropdown close() method is called.
+                This gets called at the start of the method. If the callback returns
+                false, the method will abort and nothing happens.<br>
+                The callback gets passed a parameter with the instance of TmDropdown.<br>
+                This corresponds to the select element.</td>
+        </tr>
+        <tr>
+            <td>onDestroy</td>
+            <td colspan="2">Callback for when the TmDropdown destroy() method is called.
+                This gets called at the start of the method. If the callback returns
+                false, the method will abort and the dropdown will not get destroyed.<br>
+                The callback gets passed a parameter with the instance of TmDropdown.<br>
+                The <i>this</i> variable in the function scope corresponds to the select element</td>
+        </tr>
+        <tr>
+            <td>onOpen</td>
+            <td colspan="2">Callback for when the TmDropdown open() method is called.
+                This gets called at the start of the method. If the callback returns
+                false, the method will abort and nothing happens.<br>
+                The callback gets passed a parameter with the instance of TmDropdown.<br>
+                The <i>this</i> variable in the function scope corresponds to the select element</td>
+        </tr>
+        <tr>
+            <td>onOptionSelected</td>
+            <td colspan="2">Callback for when the TmDropdown select() method is called.
+                This gets called at the start of the method. If the callback returns
+                false, the method will abort and nothing happens. (Value doesnt get changed)<br>
+                The callback gets passed two parameters:<br>
+                first: instance of TmDropdown<br>
+                second: Selected value<br>
+                The <i>this</i> variable in the function scope corresponds to the select element</td>
+        </tr>
+        <tr>
+            <td>onRefresh</td>
+            <td colspan="2">Callback method to call AFTER the TmDropdown refresh() method has finished
+                building the dropdown. Anything returned by the callback will be ignored.<br>
+                The callback gets passed a parameter with the instance of TmDropdown.<br>
+                The <i>this</i> variable in the function scope corresponds to the select element</td>
+        </tr>
+        <tr>
+            <td>onRendered</td>
+            <td colspan="2">Callback to call after the TmDropdown has initially finished building.<br>
+                This callback will only be called once at the end of the constructor method.<br>
+                The <i>this</i> variable in the function scope corresponds to the select element</td>
         </tr>
     </tbody>
 </table>

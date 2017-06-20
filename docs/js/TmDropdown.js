@@ -1,6 +1,6 @@
-/*! TmDropdown v0.3.3
+/*! TmDropdown v0.4.0
  *(C) Daniel Schuster 2017
- */
+ *https://tanuel.github.io/TmDropdown */
 ;(function (window,document) {
 	"use strict;"
 /** ----- TmDropdown default configuration ----- 
@@ -19,48 +19,48 @@ var TmDropdownConfig = {
     wrapperClass: '',
     /**Callback for when the TmDropdown close() method is called.
      * This gets called at the start of the method. If the callback returns
-     * false, the method will abort and nothing happens.
-     * The callback gets passed a parameter with the instance of TmDropdown.
-     * This corresponds to the select element.
+     * false, the method will abort and nothing happens.<br>
+     * The callback gets passed a parameter with the instance of TmDropdown.<br>
+     * The <i>this</i> variable in the function scope corresponds to the select element
      * @type function
      */
     onClose: undefined,
     /**Callback for when the TmDropdown destroy() method is called.
      * This gets called at the start of the method. If the callback returns
-     * false, the method will abort and the dropdown will not get destroyed.
-     * The callback gets passed a parameter with the instance of TmDropdown.
-     * This corresponds to the select element
+     * false, the method will abort and the dropdown will not get destroyed.<br>
+     * The callback gets passed a parameter with the instance of TmDropdown.<br>
+     * The <i>this</i> variable in the function scope corresponds to the select element
      * @type function
      */
     onDestroy: undefined,
     /**Callback for when the TmDropdown open() method is called.
      * This gets called at the start of the method. If the callback returns
-     * false, the method will abort and nothing happens.
-     * The callback gets passed a parameter with the instance of TmDropdown.
-     * This corresponds to the select element
+     * false, the method will abort and nothing happens.<br>
+     * The callback gets passed a parameter with the instance of TmDropdown.<br>
+     * The <i>this</i> variable in the function scope corresponds to the select element
      * @type function
      */
     onOpen: undefined,
     /**Callback for when the TmDropdown select() method is called.
      * This gets called at the start of the method. If the callback returns
-     * false, the method will abort and nothing happens. (Value doesnt get changed)
-     * The callback gets passed two parameters:
-     * first: instance of TmDropdown
-     * second: Selected value
-     * This corresponds to the select element
+     * false, the method will abort and nothing happens. (Value doesnt get changed)<br>
+     * The callback gets passed two parameters:<br>
+     * first: instance of TmDropdown<br>
+     * second: Selected value<br>
+     * The <i>this</i> variable in the function scope corresponds to the select element
      * @type function
      */
     onOptionSelected:undefined,
     /**Callback method to call AFTER the TmDropdown refresh() method has finished
-     * building the dropdown. Anything returned by the callback will be ignored.
-     * The callback gets passed a parameter with the instance of TmDropdown.
-     * This corresponds to the select element
+     * building the dropdown. Anything returned by the callback will be ignored.<br>
+     * The callback gets passed a parameter with the instance of TmDropdown.<br>
+     * The <i>this</i> variable in the function scope corresponds to the select element
      * @type function
      */
     onRefresh: undefined,
-    /**Callback to call after the TmDropdown has initially finished building.
-     * This callback will only be called once at the end of the constructor method.
-     * This corresponds to the select element
+    /**Callback to call after the TmDropdown has initially finished building.<br>
+     * This callback will only be called once at the end of the constructor method.<br>
+     * The <i>this</i> variable in the function scope corresponds to the select element
      * @type function
      */
     onRendered: undefined
@@ -301,7 +301,6 @@ class TmDropdown {
     
     _selectByClickEvent(ev){
         let el = ev.target;
-        console.log(ev);
         if (typeof el.dataset.value !== 'undefined') {
                 this.select(el.dataset.value);
                 this.close();

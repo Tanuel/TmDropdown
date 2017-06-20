@@ -6,7 +6,9 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        jsBanner:'TmDropdown v<%=pkg.version%>\n *(C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n *https://tanuel.github.io/TmDropdown',
         dst: 'dist',
+        bin: 'bin',
         projectName: 'TmDropdown',
         siteroot: 'docs',
         clean: {
@@ -15,6 +17,9 @@ module.exports = function (grunt) {
             },
             docs: {
                 src: ['<%=siteroot%>/*']
+            },
+            bin: {
+                src:['<%=bin%>/*']
             }
         },
         concat: {
@@ -30,7 +35,7 @@ module.exports = function (grunt) {
                 ],
                 dest: '<%= dst %>/js/<%= projectName %>.js',
                 options: {
-                    banner: '/*! TmDropdown v<%=pkg.version%>\n *(C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n */\n;(function (window,document) {\n\t"use strict;"\n',
+                    banner: '/*! <%=jsBanner%> */\n;(function (window,document) {\n\t"use strict;"\n',
                     footer: '\n})(window,document);'
                 }
             },
@@ -39,7 +44,7 @@ module.exports = function (grunt) {
                     'src/js/examples-native.js',
                     'src/js/examples-jquery.js'
                 ],
-                dest: '<%= dst %>/examples/tmd-basics.js'
+                dest: '<%=siteroot%>/js/tmd-examples.js'
             },
             html: {
                 src: [
@@ -50,32 +55,32 @@ module.exports = function (grunt) {
                     'src/html/examples-methods.html',
                     'src/html/footer.html'
                 ],
-                dest: '<%=dst%>/examples/index.html'
+                dest: '<%=siteroot%>/index.html'
             }
         },
         copy: {
-            cssImgs: {
-                expand: true,
-                cwd: 'src',
-                src: 'css/img/*',
-                dest: '<%=dst%>'
+            dist:{
+                files:[
+                    {expand: true,cwd: 'src',src: 'css/img/*',dest: '<%=dst%>'}
+                ]
             },
-            css: {
-                expand: true,
-                cwd: '<%= dst %>',
-                src: 'css/**',
-                dest: '<%= siteroot %>/',
+            docs: {
+              files: [
+                  {expand: true,cwd: '<%= dst %>',src: 'css/**',dest: '<%=siteroot%>/'},
+                  {expand: true,cwd: '<%= dst %>',src: 'js/<%= projectName %>.js',dest: '<%=siteroot%>/'}
+              ]  
             },
-            js: {
-                expand: true,
-                cwd: '<%= dst %>',
-                src: 'js/<%= projectName %>.js',
-                dest: '<%= siteroot %>/'
-            },
-            examples: {
-                files: [
-                    {expand: true, cwd: '<%= dst %>/examples', src: 'index.html', dest: '<%= siteroot %>'},
-                    {expand: true, cwd: '<%= dst %>/examples', src: 'tmd-basics.js', dest: '<%= siteroot %>/js'}
+            bin: {
+                files:[
+                  {expand: true,cwd: '<%= dst %>',src: 'css/**',dest: '<%=bin%>/'},
+                  {expand: true,cwd: '<%= dst %>/js',src: '<%= projectName %>.js',dest: '<%=bin%>/',
+                      rename:function(dest,src){
+                          return dest+'<%=projectName%>-v<%=pkg.version%>.js'
+                      }
+                  },
+                  {expand: true,src: 'README.md',dest: '<%=bin%>/'},
+                  {expand: true,src: 'LICENSE',dest: '<%=bin%>/'},
+                  {expand: true,src: 'documentation.url',dest: '<%=bin%>/'},
                 ]
             }
         },
@@ -90,7 +95,7 @@ module.exports = function (grunt) {
             }
         },
         'closure-compiler': {
-            convertToPrototype: {
+            binProto: {
                 files: {
                     'bin/<%=projectName%>-v<%= pkg.version %>.proto.js': ['dist/js/<%=projectName%>.js']
                 },
@@ -98,7 +103,17 @@ module.exports = function (grunt) {
                     compilation_level: 'WHITESPACE_ONLY',
                     language_in: 'ECMASCRIPT6_STRICT',
                     formatting: 'pretty_print',
-                    create_source_map: 'bin/<%=projectName%>-v<%= pkg.version %>.proto.js.map',
+                    //create_source_map: 'bin/<%=projectName%>-v<%= pkg.version %>.proto.js.map',
+                    output_wrapper: '%output%\n//# sourceMappingURL=<%=projectName%>-v<%= pkg.version %>.proto.js.map'
+                }
+            },
+            binMinify: {
+                files: {
+                    'bin/<%=projectName%>-v<%= pkg.version %>.miniproto.js': ['dist/js/<%=projectName%>.js']
+                },
+                options: {
+                    compilation_level: 'SIMPLE_OPTIMIZATIONS',
+                    language_in: 'ECMASCRIPT6_STRICT',
                     output_wrapper: '%output%\n//# sourceMappingURL=<%=projectName%>-v<%= pkg.version %>.proto.js.map'
                 }
             }
@@ -111,6 +126,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-sass');
 
     //grunt.registerTask('clean', ['clean']);
-    grunt.registerTask('build', ['concat', 'sass', 'copy']);
-    grunt.registerTask('clCompile', ['closure-compiler']);
+    grunt.registerTask('build', ['concat', 'sass', 'copy:dist','copy:docs']);
+    grunt.registerTask('buildBinaries', ['clean:bin','copy:bin','closure-compiler:binProto','closure-compiler:binMinify']);
 };

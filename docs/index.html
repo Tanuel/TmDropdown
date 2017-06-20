@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <link rel="stylesheet" href="css/TmDropdown.css">
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="js/TmDropdown.js"></script>
-        <script src="js/tmd-basics.js"></script>
+        <script src="js/tmd-examples.js"></script>
         <style>
             .triple-section{
                 display:flex;
@@ -35,9 +35,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             .green-border{
                 border:1px solid green;
             }
-            table h2{
+            table h2, table h3{
                 margin:0;
             }
+            
         </style>
     </head>
     <body>
@@ -223,9 +224,15 @@ new TmDropdown(domElement,options);
             <td colspan='3'><h2> Options</h2></td>
         </tr>
         <tr>
-            <th>Option name/key</th>
+            <th>Option name | type</th>
             <th>Default value</th>
             <th>Description</th>
+        </tr>
+        <tr>
+            <td>closeOnScroll | boolean</td>
+            <td>true</td>
+            <td>Indicates if the Dropdown should get closed when the document gets scrolled.<br>
+                If false, the dropdown will move with the document, but can cause performance issues</td>
         </tr>
         <tr>
             <td>emptyText | string</td>
@@ -243,6 +250,57 @@ new TmDropdown(domElement,options);
             <td>wrapperClass | string</td>
             <td>" " (empty string)</td>
             <td>Additional class for the wrapper element (still contains ".tmDropdown-wrapper")</td>
+        </tr>
+        <tr>
+            <th>Callback Options</th>
+            <th colspan="2">No defaults</th>
+        </tr>
+        <tr>
+            <td>onClose</td>
+            <td colspan="2">Callback for when the TmDropdown close() method is called.
+                This gets called at the start of the method. If the callback returns
+                false, the method will abort and nothing happens.<br>
+                The callback gets passed a parameter with the instance of TmDropdown.<br>
+                This corresponds to the select element.</td>
+        </tr>
+        <tr>
+            <td>onDestroy</td>
+            <td colspan="2">Callback for when the TmDropdown destroy() method is called.
+                This gets called at the start of the method. If the callback returns
+                false, the method will abort and the dropdown will not get destroyed.<br>
+                The callback gets passed a parameter with the instance of TmDropdown.<br>
+                The <i>this</i> variable in the function scope corresponds to the select element</td>
+        </tr>
+        <tr>
+            <td>onOpen</td>
+            <td colspan="2">Callback for when the TmDropdown open() method is called.
+                This gets called at the start of the method. If the callback returns
+                false, the method will abort and nothing happens.<br>
+                The callback gets passed a parameter with the instance of TmDropdown.<br>
+                The <i>this</i> variable in the function scope corresponds to the select element</td>
+        </tr>
+        <tr>
+            <td>onOptionSelected</td>
+            <td colspan="2">Callback for when the TmDropdown select() method is called.
+                This gets called at the start of the method. If the callback returns
+                false, the method will abort and nothing happens. (Value doesnt get changed)<br>
+                The callback gets passed two parameters:<br>
+                first: instance of TmDropdown<br>
+                second: Selected value<br>
+                The <i>this</i> variable in the function scope corresponds to the select element</td>
+        </tr>
+        <tr>
+            <td>onRefresh</td>
+            <td colspan="2">Callback method to call AFTER the TmDropdown refresh() method has finished
+                building the dropdown. Anything returned by the callback will be ignored.<br>
+                The callback gets passed a parameter with the instance of TmDropdown.<br>
+                The <i>this</i> variable in the function scope corresponds to the select element</td>
+        </tr>
+        <tr>
+            <td>onRendered</td>
+            <td colspan="2">Callback to call after the TmDropdown has initially finished building.<br>
+                This callback will only be called once at the end of the constructor method.<br>
+                The <i>this</i> variable in the function scope corresponds to the select element</td>
         </tr>
     </tbody>
 </table>
