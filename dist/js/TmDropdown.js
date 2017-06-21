@@ -1,6 +1,6 @@
-/*! TmDropdown v0.4.0
+/*! TmDropdown v0.4.1
  *(C) Daniel Schuster 2017
- *https://tanuel.github.io/TmDropdown */
+ *https://tanuel.github.io/TmDropdown/ */
 ;(function (window,document) {
 	"use strict;"
 /** ----- TmDropdown default configuration ----- 
@@ -324,9 +324,9 @@ class TmDropdown {
         current.className = 'tmDropdown-current';
         //if the select doesnt have any options, set different text
         if (select.selectedIndex !== -1) {
-            current.innerText = select.options[select.selectedIndex].innerText;
+            current.textContent = select.options[select.selectedIndex].textContent;
         } else {
-            current.innerText = this.getOption("emptyText");
+            current.textContent = this.getOption("emptyText");
             wrapper.style.width = "auto";
         }
         current.addEventListener("click", this.toggle.bind(this));
@@ -361,7 +361,7 @@ class TmDropdown {
      */
     _buildOption(option) {
         var li = document.createElement("li");
-        li.innerText = option.innerText;
+        li.textContent = option.textContent;
         var selected = option.selected ? ' tmDropdown-active' : '';
         var disabled = option.disabled ? ' tmDropdown-disabled' : '';
         li.className = 'tmDropdown-li' + selected + disabled;
@@ -384,7 +384,7 @@ class TmDropdown {
         li.className = "tmDropdown-optgroup";
         var label = document.createElement("div");
         label.className = "tmDropdown-optgroup-label";
-        label.innerText = optgroup.label;
+        label.textContent = optgroup.label;
         var ul = document.createElement("ul");
         ul.className = "tmDropdown-optgroup-options";
 

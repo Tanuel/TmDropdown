@@ -3,6 +3,8 @@
 *Leightweight* JavaScript Library/Plugin for costum select dropdowns. 
 Also provides *optional* jQuery integration.
 
+[**Read the documentation here!**](https://tanuel.github.io/TmDropdown)
+
 Include **CSS** and **JS** on your website:
 
     <link rel="stylesheet" href="css/TmDropdown.css">

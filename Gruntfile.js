@@ -6,7 +6,7 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        jsBanner:'TmDropdown v<%=pkg.version%>\n *(C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n *https://tanuel.github.io/TmDropdown',
+        jsBanner:'TmDropdown v<%=pkg.version%>\n *(C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n *<%=pkg.homepage%>',
         dst: 'dist',
         bin: 'bin',
         projectName: 'TmDropdown',
