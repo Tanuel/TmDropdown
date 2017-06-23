@@ -1,4 +1,4 @@
-/*! TmDropdown v0.4.1
+/*! TmDropdown v0.4.2
  *(C) Daniel Schuster 2017
  *https://tanuel.github.io/TmDropdown/ */
 ;(function (window,document) {
