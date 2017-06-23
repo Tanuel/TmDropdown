@@ -13,7 +13,7 @@ class TmDropdown {
         this._options = (typeof options === 'object') && Object.assign({},TmDropdownConfig,options) || {};
 
         this._dropdown = this._buildDropdown();
-        domElement.style = Object.assign({},docElement.style, {
+        domElement.style = Object.assign({},domElement.style, {
             visibility: "hidden",
             position: "absolute"
         });
