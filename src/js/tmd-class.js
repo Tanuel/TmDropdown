@@ -1,19 +1,24 @@
 /** ----- TmDropdown main class ----- 
- * Available options:
- * width - width of the wrapper
- * wrapperClass - additional class for the tmDropdown-wrapper element
- * @type TmDropdown
+ * You can set default options in TmDropdownConfig
  */
 class TmDropdown {
-
+    
+    /**
+     * 
+     * @param {HTMLSelectElement} domElement - A select element from the DOM. If it is not a Select, an error is thrown
+     * @param {Object} options - (Optional) An object with options. Available options are documented in the global TmDropdownConfig variable
+     * @returns {TmDropdown}
+     */
     constructor(domElement, options = undefined) {
-        (domElement.nodeName.toUpperCase() !== 'SELECT') && throw "Element is not a Select";
+        if (domElement.nodeName.toUpperCase() !== 'SELECT') {
+            throw "Element is not a Select";
+        }
         
         this._domElement = domElement;
         this._options = (typeof options === 'object') && Object.assign({},TmDropdownConfig,options) || {};
 
         this._dropdown = this._buildDropdown();
-        domElement.style = Object.assign({},domElement.style, {
+        Object.assign(domElement.style, {
             visibility: "hidden",
             position: "absolute"
         });
@@ -114,8 +119,7 @@ class TmDropdown {
                 'position: fixed',
                 'display: block',
                 'left: ' + rect.left + 'px',
-                'top: ' + rect.top + 'px',
-                'bottom: ' + rect.bottom + 'px',
+                'top: ' + rect.bottom + 'px',
                 'width: ' + rect.width + 'px'
             ].join(";");
             
@@ -187,6 +191,7 @@ class TmDropdown {
         this._domElement.parentNode.insertBefore(this._dropdown, this._domElement.nextSibling);
         
         this._callCallback("Refresh");
+        return this;
     }
 
     /**
@@ -206,23 +211,39 @@ class TmDropdown {
      * Select a value and refresh the dropdown
      * Will dispatch a change Event
      * 
-     * @param {string} value
+     * @param {string|HTMLOptionElement} valueOrOption
      */
-    select(value) {
-        if(this._callCallback("OptionSelected",value) === false){
+    select(valueOrOption) {
+        
+        const vop = valueOrOption;
+        if(this._callCallback("OptionSelected",vop) === false){
             return
         }
-        this._domElement.value = value;
+        
+        const sel = this._domElement;
+        if(typeof vop === "object" && sel.contains(vop)){
+            vop.selected = true;
+        }else{
+            this._domElement.value = vop;
+        }
+        
         this.refresh();
         const changeEvent = new Event('change', {bubbles: true});
         
         this._domElement.dispatchEvent(changeEvent);
+        return this;
     }
     
+    /**
+     * Event handler for when the user clicks a 
+     * @param {type} ev
+     * @returns {undefined}
+     */
     _selectByClickEvent(ev){
-        let el = ev.target;
-        if (typeof el.dataset.value !== 'undefined') {
-                this.select(el.dataset.value);
+        //get option assigned to element in _buildOption()
+        const option = ev.target.option;
+        if (!option.disabled) {
+                this.select(option);
                 this.close();
         }
     }
@@ -257,12 +278,18 @@ class TmDropdown {
         ul.className = 'tmDropdown-ul';
 
         const children = this._domElement.children;
-        
-        Array.prototype.map.call( this._domElement.children, function(c){
+        for (const child of children) {
+            if (child.tagName === 'OPTION') {
+                ul.appendChild(this._buildOption(child));
+            } else if (child.tagName === 'OPTGROUP') {
+                ul.appendChild(this._buildOptgroup(child));
+            }
+        }
+        /*Array.prototype.map.call( this._domElement.children, function(c){
             let optFn;
             optFn = (c.tagName === 'OPTION' && this._buildOption) || (c.tagName === 'OPTGROUP' && this._buildOptgroup);
             optFn && ul.appendChild(optFn);
-        });
+        });*/
         
         ul.addEventListener("click",this._selectByClickEvent.bind(this),true);
 
@@ -284,6 +311,7 @@ class TmDropdown {
               selected = option.selected && ' tmDropdown-active' || '',
               disabled = option.disabled && ' tmDropdown-disabled' || '';
         
+        li.option = option;
         li.textContent = option.textContent;
         li.className = 'tmDropdown-li' + selected + disabled;
         li.dataset.value = option.value;
@@ -301,7 +329,7 @@ class TmDropdown {
      * @internal
      */
     _buildOptgroup(optgroup) {
-        const create = document.createElement,
+        const create = document.createElement.bind(document),
               options = optgroup.children,
               li = create("li"),
               label = create("div"),
@@ -312,9 +340,9 @@ class TmDropdown {
         label.textContent = optgroup.label;
         ul.className = "tmDropdown-optgroup-options";
         
-        Array.prototype.map.call(options, function(option) {
+        for(const option of options){
             ul.append(this._buildOption(option));
-        });
+        }
 
         li.append(label);
         li.append(ul);

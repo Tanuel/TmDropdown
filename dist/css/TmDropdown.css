@@ -43,6 +43,7 @@
   padding: 0;
   display: none;
   box-sizing: border-box;
+  user-select: none;
 }
 
 .tmDropdown-ul.tmDropdown-ul-top {
@@ -52,6 +53,7 @@
 
 .tmDropdown-li {
   padding: 3px 2px;
+  cursor: pointer;
 }
 .tmDropdown-li:hover {
   background: #bb2222;
@@ -77,7 +79,10 @@
 
 .tmDropdown-optgroup-options {
   list-style-type: none;
-  padding-left: 12px;
+  padding-left: 0;
+}
+.tmDropdown-optgroup-options .tmDropdown-li {
+  padding: 3px 2px 3px 14px;
 }
 
 /*# sourceMappingURL=TmDropdown.css.map */

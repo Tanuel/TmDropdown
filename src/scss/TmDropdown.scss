@@ -11,7 +11,7 @@
     display:inline-block;
     -moz-user-select:none;
     user-select:none;
-    
+
     &.tmDropdown-open{
         z-index:1001;	
     }
@@ -44,6 +44,7 @@
     padding:0;
     display:none;
     box-sizing:border-box;
+    user-select:none;
 }
 
 .tmDropdown-ul.tmDropdown-ul-top{
@@ -51,8 +52,10 @@
     border-top:1px solid $colorPrimary;
 }
 
+
 .tmDropdown-li{
     padding:3px 2px;
+    cursor:pointer;
     &:hover{
         background:$colorPrimary;
         color:$fontColorActive;
@@ -69,6 +72,7 @@
         background-color:$colorDisabled;
     }
 }
+
 .tmDropdown-optgroup-label {
     font-weight: 700;
     padding-left:3px;
@@ -76,6 +80,8 @@
 
 .tmDropdown-optgroup-options {
     list-style-type: none;
-    padding-left:12px;
+    padding-left:0;
+    .tmDropdown-li{
+        padding:3px 2px 3px 14px;
+    }
 }
-

@@ -31,7 +31,6 @@ $(document).ready(function () {
         wrapperClass: "green-border",
         emptyText: "No options here",
         onRendered: ()=> {console.log("TmDropdown rendered");},
-        onClose: ()=> false,
         onOpen: ()=> console.log("TmDropdown opened"),
         onRefresh: function(tmd){console.log(tmd);console.log(this);}
     };

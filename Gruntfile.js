@@ -35,7 +35,7 @@ module.exports = function (grunt) {
                 ],
                 dest: '<%= dst %>/js/<%= projectName %>.js',
                 options: {
-                    banner: '/*! <%=jsBanner%> */\n;(function (window,document) {\n\t"use strict;"\n',
+                    banner: '/*! <%=jsBanner%> */\n;(function (window,document) {\n\t"use strict";\n',
                     footer: '\n})(window,document);'
                 }
             },
