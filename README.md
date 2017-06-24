@@ -7,9 +7,14 @@ Also provides *optional* jQuery integration.
 
 The latest release is located [**here**](https://github.com/Tanuel/TmDropdown/releases/).
 
-### Install via [npm](https://www.npmjs.com/package/tmdropdown)
+### Install via package manager
 
-    npm install tmdropdown
+available on [npm](https://www.npmjs.com/package/tmdropdown):    
+`npm install tmdropdown`
+    
+bower
+(coming soon)
+	
 
 	
 	

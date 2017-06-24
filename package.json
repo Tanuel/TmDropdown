@@ -1,10 +1,17 @@
 {
   "name": "tmdropdown",
-  "version": "0.4.3",
-  "description": "TmDropdown is a Javascript plugin that allows to use advanced Select Dropdowns, that have much more styling possibilities. This works better with jQuery, but works fine without it as well.",  
+  "version": "0.5.0",
+  "description": "TmDropdown is a Javascript plugin that allows to use advanced Select Dropdowns, that have much more styling possibilities. This works better with jQuery, but works fine without it as well.",
   "author": "Daniel Schuster",
-  "license":"GPL-3.0",
-  "keywords": ["select","form","input","dropdown","ui","lightweight"],
+  "license": "GPL-3.0",
+  "keywords": [
+    "select",
+    "form",
+    "input",
+    "dropdown",
+    "ui",
+    "lightweight"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/tanuel/tmdropdown.git"

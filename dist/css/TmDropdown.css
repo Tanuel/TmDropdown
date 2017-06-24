@@ -14,6 +14,10 @@
 .tmDropdown-wrapper.tmDropdown-open {
   z-index: 1001;
 }
+.tmDropdown-wrapper.tmDropdown-multiple {
+  min-width: 500px;
+  max-width: 100%;
+}
 
 .tmDropdown-current {
   border: 1px solid #bb2222;
@@ -29,6 +33,19 @@
   vertical-align: middle;
   position: absolute;
   right: 0;
+}
+
+.tmDropdown-current-item {
+  display: inline-block;
+  border: 1px solid #da3636;
+  padding: 0.25em 0.6em;
+  margin-right: 0.3em;
+  margin-bottom: 0.3em;
+  border-radius: 0.3em;
+}
+.tmDropdown-current-item:hover {
+  opacity: 0.65;
+  background-color: #fae2e2;
 }
 
 .tmDropdown-ul {
@@ -56,7 +73,7 @@
   cursor: pointer;
 }
 .tmDropdown-li:hover {
-  background: #bb2222;
+  background: #da3636;
   color: #fff;
 }
 

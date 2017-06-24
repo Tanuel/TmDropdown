@@ -5,10 +5,15 @@ var TmDropdownConfig = {
     /**Indicates if the Dropdown should get closed when the document gets scrolled.
      * If false, the dropdown will move with the document, but can cause performance issues*/
     closeOnScroll: true,
-    /**A text to display if the select is empty / doesnt have any options<*/
+    /**A text to display if the select is empty / doesnt have any options<
+     * @type String
+     */
     emptyText: "No options available",
+    /**Placeholder text, if no value is selected
+     * @type String */
+    placeholder: "Select an option",
     /** A fixed width for the wrapper. You can use any valid CSS-Value here,
-     * such as 100%, 130px or auto (auto is not recommended). **/
+     * such as 100%, 130px or auto (auto is not recommended).*/
     width: undefined,
     /**additional class for the wrapper element (still contains tmDropdown-wrapper)*/
     wrapperClass: '',
