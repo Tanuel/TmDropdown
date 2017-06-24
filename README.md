@@ -3,7 +3,18 @@
 *Leightweight* JavaScript Library/Plugin for costum select dropdowns. 
 Also provides *optional* jQuery integration.
 
-[**Read the documentation here!**](https://tanuel.github.io/TmDropdown)
+[**Read the full documentation here!**](https://tanuel.github.io/TmDropdown)
+
+The latest release is located [**here**](https://github.com/Tanuel/TmDropdown/releases/).
+
+### Install via [npm](https://www.npmjs.com/package/tmdropdown)
+
+    npm install tmdropdown
+
+	
+	
+### Basic Usage
+Complete reference [here](https://tanuel.github.io/TmDropdown).
 
 Include **CSS** and **JS** on your website:
 
