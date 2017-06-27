@@ -22,9 +22,18 @@
     }
 }
 .tmDropdown-current{
+    display:block;
     border:1px solid $tmdColorPrimary;
     padding:5px 15px 5px 3px;
     font-size:13.33333px;
+    color:inherit;
+    text-decoration:none;
+    &:focus{
+        outline-color:2px solid red;
+    }
+    &:hover{
+        text-decoration:none;
+    }
     &:after {
         content: ' ';
         height: 15px;
@@ -75,13 +84,17 @@
 .tmDropdown-li{
     padding:3px 2px;
     cursor:pointer;
-    &:hover{
+    /*&:hover{
+        background:lighten($tmdColorPrimary,10%);
+        color:$tmdFontColorActive;
+    }*/
+    &.tmDropdown-hover{
         background:lighten($tmdColorPrimary,10%);
         color:$tmdFontColorActive;
     }
 }
 
-.tmDropdown-active{
+.tmDropdown-selected{
     background-color:$tmdColorPrimary;
     color:$tmdFontColorActive;
 }

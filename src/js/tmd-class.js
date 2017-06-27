@@ -57,6 +57,42 @@ class TmDropdown {
     get isMultiple(){
         return this._domElement.multiple;
     }
+    /**
+     * tells if anything in this dropdown is targeted by the specified event
+     * @param {Event} event -  a native event
+     * @returns {boolean}
+     */
+    isEventTarget(event){
+        return  this._dropdown !== event.target &&
+               !this._dropdown.contains(event.target) &&
+                this._optionsUL !== event.target &&
+               !this._optionsUL.contains(event.target);
+    }
+    
+    isOptlistEventTarget(event){
+        return this._optionsUL !== event.target &&
+              !this._optionsUL.contains(event.target);
+    }
+    
+    /**
+     * returns the currently selected li (not the option!)
+     * returns null for multiple select!
+     * @type HTMLLiElement
+     */
+    get selectedElement(){
+        return this.isMultiple ? null : this._optionsUL.getElementsByClassName('tmDropdown-selected')[0];
+    }
+    /**
+     * returns the currently hovered li (not the option!)
+     * @type HTMLLiElement
+     */
+    get hoveredElement(){
+        let hovered = this._optionsUL.getElementsByClassName('tmDropdown-hover')[0];
+        if(!hovered && !this.isMultiple){
+            hovered = this.selectedElement;
+        }
+        return hovered;
+    }
     
     /**
      * Wrapper function for callbacks. Checks if the callback is a function and 
@@ -160,7 +196,7 @@ class TmDropdown {
             this._optionsUL.scrollTop = this._lastScrollPosition;
         }else {
             //scroll to selected element
-            const selectedElement = this._optionsUL.getElementsByClassName("tmDropdown-active")[0];
+            const selectedElement = this._optionsUL.getElementsByClassName("tmDropdown-selected")[0];
 
             if (selectedElement) {
                 this._optionsUL.scrollTop = selectedElement.offsetTop - (this._optionsUL.offsetHeight / 2);
@@ -185,7 +221,14 @@ class TmDropdown {
         this._dropdown.appendChild(this._optionsUL);
         this._optionsUL.style.cssText = '';
     }
-
+    
+    /**
+     * Focus the dropdown
+     */
+    focus() {
+        this._current.focus();
+    }
+    
     /**
      * Open or close the dropdown, depending on current state
      * This method wont trigger callbacks itsself, but calls for open or close and
@@ -213,7 +256,7 @@ class TmDropdown {
      */
     destroy() {
         if (this._callCallback("Destroy") === false) {
-            return
+            return;
         }
         this._dropdown.parentNode.removeChild(this._dropdown);
         this._domElement.style.visibility = "";
@@ -254,23 +297,6 @@ class TmDropdown {
     }
 
     /**
-     * Event handler for when the user clicks a 
-     * @param {Event|Click} event - Click Event object
-     */
-    _selectByClickEvent(event) {
-        //get option assigned to element in _buildOption()
-        const li = event.target;
-        const option = li.option;
-        if (!option.disabled) {
-            
-            li.classList.toggle("tmDropdown-active");
-            let oldScroll = this._optionsUL.scrollTop;
-            this.select(option);
-            this.isMultiple && this.open(oldScroll);// = oldScroll;
-        }
-    }
-
-    /**
      * Builds the dropdown DOM element
      * 
      * @returns {Element}
@@ -284,15 +310,16 @@ class TmDropdown {
         const ul = this._optionsUL = this._buildOptionsList(select);
 
         wrapper.className = 'tmDropdown-wrapper ' + this.getOption("wrapperClass");
-        wrapper.className += this.isMultiple && 'tmDropdown-multiple';
+        this.isMultiple && wrapper.classList.add('tmDropdown-multiple');
+        //wrapper.className += this.isMultiple ? 'tmDropdown-multiple' : '';
         //If the select doesnt have any options, set auto width
         wrapper.style.width = select.children.length ? this.getOption("width") : 'auto';
         wrapper.appendChild(current);
         wrapper.appendChild(ul);
-
+        this._bindDropdownEvents(wrapper,ul);
         return wrapper;
     }
-
+    
     /**
      * Build the tmDropdown-current element from the select
      * @param {HTMLSelectElement} select
@@ -300,16 +327,16 @@ class TmDropdown {
      */
     _buildCurrent(select) {
         const create = document.createElement.bind(document);
-        const current = create("div");
+        const current = create("a");
         current.className = 'tmDropdown-current';
-
+        current.tabIndex = this._domElement.tabIndex;
         if (select.multiple) {
             if(select.selectedOptions.length !== 0){
                 for(const option of select.selectedOptions){
                     const element = create("div");
                     element.option = option;
                     element.textContent = option.textContent;
-                    element.className = "tmDropdown-current-item"
+                    element.className = "tmDropdown-current-item";
                     element.addEventListener("click",this._selectByClickEvent.bind(this));
                     current.appendChild(element);
                 }
@@ -319,7 +346,7 @@ class TmDropdown {
         } else {
             //if the select doesnt have any options, set placeholder text
             if(select.selectedIndex !== -1){
-                current.textContent = select.options[select.selectedIndex].textContent
+                current.textContent = select.options[select.selectedIndex].textContent;
             }else{
                 current.textContent = select.options.length ? this.getOption("placeholder") : this.getOption("emptyText");
             }
@@ -362,12 +389,12 @@ class TmDropdown {
      */
     _buildOption(option) {
         const li = document.createElement("li"),
-                selected = option.selected && ' tmDropdown-active' || '',
-                disabled = option.disabled && ' tmDropdown-disabled' || '';
-
+              selected = option.selected && ' tmDropdown-selected' || '',
+              disabled = option.disabled && ' tmDropdown-disabled' || '',
+              hovered = option === this._lastSelectedOption && ' tmDropdown-hover' || '';
         li.option = option;
         li.textContent = option.textContent;
-        li.className = 'tmDropdown-li' + selected + disabled;
+        li.className = 'tmDropdown-li' + selected + disabled + hovered;
         li.dataset.value = option.value;
         return li;
     }
@@ -403,6 +430,138 @@ class TmDropdown {
 
         return li;
     }
+    
+    /*---- dropdown utility events ----*/
+    /**
+     * 
+     * @param {HTMLDivElement} wrapper - the wrapper for the dropdown
+     * @param {HTMLUlElement} optList - the wrapper for options
+     * @returns {HTMLDivElement|wrapper}
+     */
+    _bindDropdownEvents(wrapper,optList){
+        wrapper.addEventListener('keydown',this._onKeydown.bind(this));
+        wrapper.addEventListener('focusin',this._onFocusin.bind(this));
+        wrapper.addEventListener('focusout',this._onFocusout.bind(this));
+        optList.addEventListener('mouseover',this._listMouseover.bind(this));
+        optList.addEventListener('mouseout',this._listMouseout.bind(this));
+        optList.addEventListener('mousedown',this._listMousedown.bind(this));
+        return wrapper;
+    }
+    
+    _onFocusin(){
+        this._dropdown.classList.add('tmDropdown-focused');
+        //this.open();
+    }
+    
+    _onFocusout(){
+        if(!this._listClicked){
+            this._dropdown.classList.remove('tmDropdown-focused');
+            this.close();
+        }
+        this._listClicked = false;
+    }
+    
+    _onKeydown(event){
+        const key = event.keyCode || event.which;
+        switch(key){
+            //arrow up
+            case 38: this._navigate(event,"up");break;
+            //arrow down
+            case 40: this._navigate(event,"down");break;
+            //enter
+            case 13: this.isOpen ? this._selectByEnter() : this.open(); break;
+            //escape
+            case 27: this.close();break;
+        }
+    }
+    _navigate(event,direction){
+        event.preventDefault();
+        if(!this.isOpen){
+            this.open();
+            return;
+        }
+        const child = direction === 'up' ? "lastChild" : "firstChild";
+        const sibling = direction === 'up' ? "previousElementSibling" : "nextElementSibling";
+        const optlist = this._optionsUL;
+        //currently hovered element
+        const hovered = this.hoveredElement;
+        let newHover;
+        if(!hovered){
+            newHover = optlist.firstChild.classList.contains('tmDropdown-li') ? optlist.firstChild : optlist.firstChild.firstChild;
+            newHover.classList.add('tmDropdown-hover');
+        }else{
+            newHover = hovered[sibling];
+            if(!newHover && hovered.parentElement.parentElement.classList.contains('tmDropdown-optgroup')){
+                    newHover = hovered.parentElement.parentElement[sibling];
+            }
+            if(newHover){
+                while(newHover && newHover.classList.contains('tmDropdown-optgroup') && !newHover.children[1][child]){
+                    newHover = newHover[sibling];
+                }
+                if(newHover.classList.contains('tmDropdown-optgroup')){
+                    newHover = newHover.children[1][child];
+                }
+            }
+            if(newHover){
+                hovered.classList.remove('tmDropdown-hover');
+                newHover.classList.add('tmDropdown-hover');
+            }
+            this._optionsUL.scrollTop = newHover.offsetTop - (this._optionsUL.offsetHeight / 2);
+        }
+    }
+    
+    /**
+     * Event handler for when the user clicks a 
+     * @param {Event|Click} event - Click Event object
+     */
+    _selectByClickEvent(event) {
+        //get option assigned to element in _buildOption()
+        const li = event.target;
+        const option = li.option;
+        if (!option.disabled) {
+            
+            li.classList.toggle("tmDropdown-selected");
+            let oldScroll = this._optionsUL.scrollTop;
+            this.select(option);
+            this.isMultiple && this.open(oldScroll);// = oldScroll;
+            this.focus();
+        }
+    }
+    
+    _selectByEnter(){
+        const hovered = this.hoveredElement;
+        if(!hovered){
+            return;
+        }
+        const option = hovered.option;
+        if (!option.disabled) {            
+            hovered.classList.toggle("tmDropdown-selected");
+            let oldScroll = this._optionsUL.scrollTop;
+            this._lastSelectedOption = option;
+            this.select(option);
+            this.isMultiple && this.open(oldScroll);// = oldScroll;
+            this.focus();
+        }
+    }
+    
+    _listMousedown(){
+        this._listClicked = true;
+    }
+    
+    _listMouseover(event){
+        const tcl = event.target.classList;
+        for(const li of this._optionsUL.getElementsByClassName('tmDropdown-hover')){
+            li.classList.remove('tmDropdown-hover');
+        }
+        if(tcl.contains('tmDropdown-li')){
+            tcl.add('tmDropdown-hover');
+        }
+    }
+    
+    _listMouseout(event){
+       event.target.classList.remove('tmDropdown-hover');
+    }
+    
 }
 //assign TmDropdown to window to make it global
 window.TmDropdown = TmDropdown;
