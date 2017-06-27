@@ -80,10 +80,6 @@
 .tmDropdown-li {
   padding: 3px 2px;
   cursor: pointer;
-  /*&:hover{
-      background:lighten($tmdColorPrimary,10%);
-      color:$tmdFontColorActive;
-  }*/
 }
 .tmDropdown-li.tmDropdown-hover {
   background: #da3636;
@@ -98,7 +94,7 @@
 .tmDropdown-disabled {
   color: #aaa;
 }
-.tmDropdown-disabled:hover {
+.tmDropdown-disabled.tmDropdown-hover {
   background-color: #aaa;
 }
 

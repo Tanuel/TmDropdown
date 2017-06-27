@@ -1,0 +1,27 @@
+{
+  "name": "tmdropdown",
+  "description": "TmDropdown is a Javascript plugin that allows to use advanced Select Dropdowns, that have much more styling possibilities. This works better with jQuery, but works fine without it as well.",
+  "main": [
+      "dist/js/TmDropdown.js",
+      "dist/css/TmDropdown.css"
+  ],
+  "authors": [
+    "Daniel Schuster"
+  ],
+  "license": "GPL-3.0",
+  "keywords": [
+    "select",
+    "form",
+    "input",
+    "dropdown",
+    "ui",
+    "lightweight"
+  ],
+  "homepage": "https://github.com/Tanuel/TmDropdown",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bin",
+    "nbproject"
+  ]
+}

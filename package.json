@@ -1,8 +1,10 @@
 {
   "name": "tmdropdown",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "TmDropdown is a Javascript plugin that allows to use advanced Select Dropdowns, that have much more styling possibilities. This works better with jQuery, but works fine without it as well.",
-  "author": "Daniel Schuster",
+  "authors": [
+    "Daniel Schuster"
+  ],
   "license": "GPL-3.0",
   "keywords": [
     "select",
@@ -23,6 +25,7 @@
     "google-closure-compiler": "^20170521.0.0",
     "grunt": "^1.0.1",
     "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-compress": "^1.4.3",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-sass": "^1.0.0"

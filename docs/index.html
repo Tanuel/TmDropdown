@@ -46,13 +46,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <h2>by <a href="https://tanuel.github.io">Tanuel</a></h2>
         <p>TmDropdown is a JavaScript plugin that allows easy styling of select elements by mimicking their functionality, but providing more freedom</p>
         <p>This Project is still in the early stages of development, so <i>bugs may happen</i>.</p>
-        <p><b><a href="https://github.com/Tanuel/TmDropdown/releases/latest" target="_blank">Download here</a></b> or <a target="_blank" href="https://github.com/tanuel/tmdropdown"><b>view the source on Github</b></a>
-
+        <p><b><a href="https://github.com/Tanuel/TmDropdown/releases/latest" target="_blank">Download here</a></b> or <a target="_blank" href="https://github.com/tanuel/tmdropdown"><b>view the source on Github</b></a></p>
+        <p>Also available on <a href="https://www.npmjs.com/package/tmdropdown" target="_blank">npm</a>: <code class="inline">npm install tmdropdown</code><p>
+        <div class="navigation">
+            Navigation
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#native">Native Usage</a></li>
+                <li><a href="#jquery">jQuery Usage</a></li>
+                <li><a href="#options">Options</a></li>
+                <li><a href="#reference">Referenz</a>
+                    <ul>
+                        <li><a href="#ref-props">Properties</a></li>
+                        <li><a href="#ref-methods">Methods</a></li>
+                        <li><a href="#ref-options">Options</a></li>
+                        <li><a href="#ref-cbs">Callbacks</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+            
+        <hr>
+        <h2 id="features">Features</h2>
+        <ul>
+            <li>Allows advanced styling of Select Dropdowns</li>
+            <li>Supports tabbing through Forms (Try pressing tab a few times). Tabindex will be taken over from the original select element</li>
+            <li>Supports navigating through the dropdown via keyboard - up, down, enter, escape</li>
+            <li>Supports disabled options and multi-selects</li>
+            <li>Offers jQuery-Integration, but also works without it</li>
+            <li>You can set a default configuration in the global object TmDropdownConfig like
+                <ul>
+                    <li><code class="inline">TmDropdownConfig.width = "100%"</code></li>
+                    <li><code class="inline">TmDropdownConfig.emptyText = "No Options available."</code></li>
+                </ul>
+            </li>
+        </ul>
+        
 <hr>
-<h2>Native</h2>
+<h2 id="native">Native Usage</h2>
 <code>document.querySelectorAll(".tmDropdown").forEach(function(element){
     new TmDropdown(element);
-    });
+});
 </code>
 <div class="triple-section">
     <section>
@@ -141,7 +175,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </select>
 </section>
 <hr>
-<h2>jQuery</h2>
+<h2 id="native">jQuery Usage</h2>
 <code>$("select.tmDropdown").TmDropdown();</code>
 <section>
     <select class="tmDropdownJquery">
@@ -152,7 +186,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 </section>
 
 <hr>
-<h2>Options</h2>
+<h2 id="options">Options</h2>
 <p>TmDropdown can be initialized with options</p>
 <code>var options = {
     width: "200px",
@@ -174,13 +208,13 @@ new TmDropdown(domElement,options);
     <option disabled>option 3 (disabled)</option>
 </select>
 <hr>
-<h2>Reference</h2>
+<h2 id="reference">Reference</h2>
 <p>A list of methods and options and the corresponding usage with jQuery.
     The jQuery plugin is lightweight and will always call the corresponding
     method in the attached TmDropdown object</p>
 <table>
     <tbody>
-        <tr>
+        <tr id="ref-props">
             <td colspan='3'><h2>Properties</h2></td>
         </tr>
         <tr>
@@ -202,7 +236,7 @@ new TmDropdown(domElement,options);
                 options have changed, but the TmDropdown hasn't been refreshed.
                 (Implemented for internal use, but also available externally because why not)</td>
         </tr>
-        <tr>
+        <tr id="ref-methods">
             <td colspan='3'><h2>Methods</h2></td>
         </tr>
         <tr>
@@ -256,7 +290,7 @@ new TmDropdown(domElement,options);
             <td>$(e).TmDropdown("option",name,value)</td>
             <td>Set the value of an option. If you use this, call refresh() after.</td>
         </tr>
-        <tr>
+        <tr id="ref-options">
             <td colspan='3'><h2> Options</h2></td>
         </tr>
         <tr>
@@ -287,7 +321,7 @@ new TmDropdown(domElement,options);
             <td>" " (empty string)</td>
             <td>Additional class for the wrapper element (still contains ".tmDropdown-wrapper")</td>
         </tr>
-        <tr>
+        <tr id="ref-cbs">
             <th>Callback Options</th>
             <th colspan="2">No defaults</th>
         </tr>

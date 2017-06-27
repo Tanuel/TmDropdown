@@ -1,5 +1,5 @@
-/*! TmDropdown v0.5.0
- *(C) Daniel Schuster 2017
+/*! TmDropdown v0.6.0
+ *(C)  2017
  *https://tanuel.github.io/TmDropdown/ */
 ;(function (window,document) {
 	"use strict";
@@ -131,6 +131,22 @@ class TmDropdown {
     get isMultiple(){
         return this._domElement.multiple;
     }
+    /**
+     * tells if anything in this dropdown is targeted by the specified event
+     * @param {Event} event -  a native event
+     * @returns {boolean}
+     */
+    isEventTarget(event){
+        return  this._dropdown !== event.target &&
+               !this._dropdown.contains(event.target) &&
+                this._optionsUL !== event.target &&
+               !this._optionsUL.contains(event.target);
+    }
+    
+    isOptlistEventTarget(event){
+        return this._optionsUL !== event.target &&
+              !this._optionsUL.contains(event.target);
+    }
     
     /**
      * returns the currently selected li (not the option!)
@@ -138,7 +154,7 @@ class TmDropdown {
      * @type HTMLLiElement
      */
     get selectedElement(){
-        return this.isMultiple ? null : this._optionsUL.getElementsByClassName('tmDropdown-selected')[0]
+        return this.isMultiple ? null : this._optionsUL.getElementsByClassName('tmDropdown-selected')[0];
     }
     /**
      * returns the currently hovered li (not the option!)
@@ -502,15 +518,21 @@ class TmDropdown {
         wrapper.addEventListener('focusout',this._onFocusout.bind(this));
         optList.addEventListener('mouseover',this._listMouseover.bind(this));
         optList.addEventListener('mouseout',this._listMouseout.bind(this));
+        optList.addEventListener('mousedown',this._listMousedown.bind(this));
         return wrapper;
     }
     
     _onFocusin(){
         this._dropdown.classList.add('tmDropdown-focused');
+        //this.open();
     }
     
     _onFocusout(){
-        this._dropdown.classList.remove('tmDropdown-focused');
+        if(!this._listClicked){
+            this._dropdown.classList.remove('tmDropdown-focused');
+            this.close();
+        }
+        this._listClicked = false;
     }
     
     _onKeydown(event){
@@ -596,6 +618,10 @@ class TmDropdown {
         }
     }
     
+    _listMousedown(){
+        this._listClicked = true;
+    }
+    
     _listMouseover(event){
         const tcl = event.target.classList;
         for(const li of this._optionsUL.getElementsByClassName('tmDropdown-hover')){
@@ -605,6 +631,7 @@ class TmDropdown {
             tcl.add('tmDropdown-hover');
         }
     }
+    
     _listMouseout(event){
        event.target.classList.remove('tmDropdown-hover');
     }
