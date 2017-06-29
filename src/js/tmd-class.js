@@ -332,14 +332,14 @@ class TmDropdown {
         current.tabIndex = this._domElement.tabIndex;
         if (select.multiple) {
             if(select.selectedOptions.length !== 0){
-                for(const option of select.selectedOptions){
+                Array.prototype.map.call(select.selectedOptions,function(option){
                     const element = create("div");
                     element.option = option;
                     element.textContent = option.textContent;
                     element.className = "tmDropdown-current-item";
                     element.addEventListener("click",this._selectByClickEvent.bind(this));
                     current.appendChild(element);
-                }
+                },this);
             }else{
                 current.textContent = select.options.length ? this.getOption("placeholder") : this.getOption("emptyText");
             }
@@ -366,13 +366,13 @@ class TmDropdown {
         ul.className = 'tmDropdown-ul';
 
         const children = select.children;
-        for (const child of children) {
+        Array.prototype.map.call( children, function(child){
             if (child.tagName === 'OPTION') {
                 ul.appendChild(this._buildOption(child));
             } else if (child.tagName === 'OPTGROUP') {
                 ul.appendChild(this._buildOptgroup(child));
             }
-        }
+        },this);
 
         ul.addEventListener("click", this._selectByClickEvent.bind(this), true);
         //ul.addEventListener("scroll",function(event){event.stopPropagation();});
@@ -420,10 +420,9 @@ class TmDropdown {
         label.className = "tmDropdown-optgroup-label";
         label.textContent = optgroup.label;
         ul.className = "tmDropdown-optgroup-options";
-
-        for (const option of options) {
-            ul.append(this._buildOption(option));
-        }
+        Array.prototype.map.call(options,function(option){
+             ul.append(this._buildOption(option));
+        },this);
 
         li.append(label);
         li.append(ul);
@@ -550,9 +549,9 @@ class TmDropdown {
     
     _listMouseover(event){
         const tcl = event.target.classList;
-        for(const li of this._optionsUL.getElementsByClassName('tmDropdown-hover')){
+        Array.prototype.map.call(this._optionsUL.getElementsByClassName('tmDropdown-hover'),function(li){
             li.classList.remove('tmDropdown-hover');
-        }
+        });
         if(tcl.contains('tmDropdown-li')){
             tcl.add('tmDropdown-hover');
         }
