@@ -108,6 +108,7 @@ tmdc.focused = tmdc.name+"-focused";
 tmdc.selected = tmdc.name+"-selected";
 tmdc.disabled = tmdc.name+"-disabled";
 tmdc.hover = tmdc.name+"-hover";
+
 /* global TmDropdown, __map */
 
 /**
