@@ -6,9 +6,11 @@ var TmDropdownConfig = {
      * If false, the dropdown will move with the document, but can cause performance issues*/
     closeOnScroll: true,
     /**A text to display if the select is empty / doesnt have any options<
-     * @type String
-     */
+     * @type String*/
     emptyText: "No options available",
+    /**Register a MutationObserver to watch changes in the select
+     * @type Boolean */
+    observe:true,
     /**Placeholder text, if no value is selected
      * @type String */
     placeholder: "Select an option",

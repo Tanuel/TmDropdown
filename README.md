@@ -9,11 +9,11 @@ The latest release is located [**here**](https://github.com/Tanuel/TmDropdown/re
 
 ### Install via package manager
 
-available on [npm](https://www.npmjs.com/package/tmdropdown):    
+[npm](https://www.npmjs.com/package/tmdropdown):    
 `npm install tmdropdown`
     
 bower
-(coming soon)
+`bower install tmdropdown`
 	
 
 	

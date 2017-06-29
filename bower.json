@@ -17,7 +17,7 @@
     "ui",
     "lightweight"
   ],
-  "homepage": "https://github.com/Tanuel/TmDropdown",
+  "homepage": "https://tanuel.github.io/TmDropdown",
   "ignore": [
     "**/.*",
     "node_modules",

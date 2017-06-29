@@ -48,6 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <p>This Project is still in the early stages of development, so <i>bugs may happen</i>.</p>
         <p><b><a href="https://github.com/Tanuel/TmDropdown/releases/latest" target="_blank">Download here</a></b> or <a target="_blank" href="https://github.com/tanuel/tmdropdown"><b>view the source on Github</b></a></p>
         <p>Also available on <a href="https://www.npmjs.com/package/tmdropdown" target="_blank">npm</a>: <code class="inline">npm install tmdropdown</code><p>
+        <p>Or <a href="https://bower.io" target="_blank">bower</a>: <code class="inline">bower install tmdropdown</code><p>
         <div class="navigation">
             Navigation
             <ul>
@@ -236,6 +237,22 @@ new TmDropdown(domElement,options);
                 options have changed, but the TmDropdown hasn't been refreshed.
                 (Implemented for internal use, but also available externally because why not)</td>
         </tr>
+        <tr>
+            <td>isMultiple</td>
+            <td>boolean</td>
+            <td>Tells if the Dropdown is multiple.
+                This accesses the original select and may be inaccurate if
+                the multiple attribute has been changed, but the TmDropdown hasn't been refreshed.
+                (Implemented for internal use, but also available externally because why not)</td>
+        </tr>
+        <tr>
+            <td>observer</td>
+            <td>MutationObserver</td>
+            <td>A <a href="https://developer.mozilla.org/de/docs/Web/API/MutationObserver">MutationObserver</a>
+                listening on the original select<br>
+                If for what ever reason you do not want the dropdown to update on dom changes
+                anymore, you can use observer.disconnect() (not recommended) </td>
+        </tr>
         <tr id="ref-methods">
             <td colspan='3'><h2>Methods</h2></td>
         </tr>
@@ -249,6 +266,12 @@ new TmDropdown(domElement,options);
             <td>$(e).TmDropdown("refresh")</td>
             <td>Refresh the Dropdown. Use this if you changed something in the select element,
                 like added options or changed the value.</td>
+        </tr>
+        <tr>
+            <td>focus();</td>
+            <td>$(e)[0].TmDropdown.focus()</td>
+            <td>Focus the dropdown. 
+                This is mainly intended for internal use and may act weird if used with jQuery</td>
         </tr>
         <tr>
             <td>open();</td>
@@ -276,7 +299,7 @@ new TmDropdown(domElement,options);
             <td>Open or close the dropdown, depending on state. Mostly for internal use.</td>
         </tr>
         <tr>
-            <td>repositionOptionsUl</td>
+            <td>repositionOptionsUL()</td>
             <td>$(e).TmDropdown("reposition")</td>
             <td>Reposition the Dropdown in case the DOM layout has changed while the dropdown is open.</td>
         </tr>
@@ -308,6 +331,12 @@ new TmDropdown(domElement,options);
             <td>emptyText | string</td>
             <td>"No options available"</td>
             <td>A text to display if the select is empty / doesnt have any options</td>
+        </tr>
+        <tr>
+            <td>observe | boolean</td>
+            <td>true</td>
+            <td>Register a <a href="https://developer.mozilla.org/de/docs/Web/API/MutationObserver">MutationObserver</a>,
+                to automatically update the dropdown, if the content of the select is changed</td>
         </tr>
         <tr>
             <td>width | string</td>

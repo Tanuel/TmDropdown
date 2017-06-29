@@ -18,7 +18,7 @@
  * $(selector).TmDropdown("select",value); - select a value
  */
 if (window.jQuery) {
-    var jqTmDropdown = function (action = undefined,value = undefined) {
+    var jqTmDropdown = function (action = undefined,value = undefined,value2 = undefined) {
         if (typeof action === 'undefined' || typeof action === 'object') {
             return this.each(function () {
                 if (this.TmDropdown instanceof TmDropdown) {
@@ -97,6 +97,17 @@ if (window.jQuery) {
                                 console.warn("TmDropdown not initialized on this element yet");
                             }
                         });
+                    }
+                case "option":
+                    if(value){
+                        return value2 === undefined ? this.first().TmDropdown.getOption(value) :
+                            this.each(function(){
+                                if (this.TmDropdown instanceof TmDropdown) {
+                                    this.TmDropdown.setOption(value,value2);
+                                } else {
+                                    console.warn("TmDropdown not initialized on this element yet");
+                                }
+                            });
                     }
                 default:
                     console.error("Invalid parameter " + action + " for TmDropdown");

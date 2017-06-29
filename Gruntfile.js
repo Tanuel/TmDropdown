@@ -24,20 +24,20 @@ module.exports = function (grunt) {
             }
         },
         concat: {
-            options: {
-                // define a string to put between each file in the concatenated output
-                separator: '\n'
-            },
             jsmain: {
                 src: [
+                    '<%=src%>/js/tmd-init.js', //init some commonly used functions
                     '<%=src%>/js/tmd-config.js', //default TmDropdown configuration
+                    '<%=src%>/js/tmd-css-classes.js', //TmDropdown css classes configuration
+                    '<%=src%>/js/tmd-delegator.js', //event delegator for global events
                     '<%=src%>/js/tmd-class.js', //class file
                     '<%=src%>/js/tmd-jquery-plugin.js' //jquery integration plugin
                 ],
                 dest: '<%= dst %>/js/<%= projectName %>.js',
                 options: {
                     banner: '/*! <%=jsBanner%> */\n;(function (window,document) {\n\t"use strict";\n',
-                    footer: '\n})(window,document);'
+                    footer: '\n}).call(this,window,document);',
+                    sourceMap: true
                 }
             },
             jsexamples: {
@@ -68,7 +68,8 @@ module.exports = function (grunt) {
             docs: {
               files: [
                   {expand: true,cwd: '<%= dst %>',src: 'css/**',dest: '<%=siteroot%>/'},
-                  {expand: true,cwd: '<%= dst %>',src: 'js/<%= projectName %>.js',dest: '<%=siteroot%>/'}
+                  {expand: true,cwd: '<%= dst %>',src: 'js/<%= projectName %>.js',dest: '<%=siteroot%>/'},
+                  {expand: true,cwd: '<%= dst %>',src: 'js/<%= projectName %>.js.map',dest: '<%=siteroot%>/'}
               ]  
             },
             bin: {
@@ -128,6 +129,7 @@ module.exports = function (grunt) {
                 options: {
                     compilation_level: 'WHITESPACE_ONLY',
                     language_in: 'ECMASCRIPT6_STRICT',
+                    language_out: 'ECMASCRIPT5_STRICT',
                     formatting: 'pretty_print',
                     create_source_map: 'bin/<%=projectName%>-v<%= pkg.version %>.proto.js.map',
                     output_wrapper: '%output%\n//# sourceMappingURL=<%=projectName%>-v<%= pkg.version %>.proto.js.map'
