@@ -43,7 +43,7 @@ class TmDropdown {
      * @type boolean
      */
     get isOpen() {
-        return this._dropdown.classList.contains("tmDropdown-open");
+        return this._dropdown.classList.contains(tmdc.open);
     }
 
     /**
@@ -80,14 +80,14 @@ class TmDropdown {
      * @type HTMLLiElement
      */
     get selectedElement(){
-        return this.isMultiple ? null : this._optionsUL.getElementsByClassName('tmDropdown-selected')[0];
+        return this.isMultiple ? null : this._optionsUL.getElementsByClassName(tmdc.selected)[0];
     }
     /**
      * returns the currently hovered li (not the option!)
      * @type HTMLLiElement
      */
     get hoveredElement(){
-        let hovered = this._optionsUL.getElementsByClassName('tmDropdown-hover')[0];
+        let hovered = this._optionsUL.getElementsByClassName(tmdc.hover)[0];
         if(!hovered && !this.isMultiple){
             hovered = this.selectedElement;
         }
@@ -169,9 +169,9 @@ class TmDropdown {
             if (this._optionsUL.getBoundingClientRect().bottom > window.innerHeight) {
                 const rectUL = this._optionsUL.getBoundingClientRect();
                 this._optionsUL.style.top = (rect.top - rectUL.height) + "px";
-                this._optionsUL.classList.add("tmDropdown-ul-top");
+                this._optionsUL.classList.add(tmdc.optListTop);
             } else {
-                this._optionsUL.classList.remove("tmDropdown-ul-top");
+                this._optionsUL.classList.remove(tmdc.optListTop);
             }
         }
     }
@@ -186,7 +186,7 @@ class TmDropdown {
             return;
         }
 
-        this._dropdown.classList.add("tmDropdown-open");
+        this._dropdown.classList.add(tmdc.open);
         document.body.appendChild(this._optionsUL);
         this.repositionOptionsUL();
         
@@ -196,7 +196,7 @@ class TmDropdown {
             this._optionsUL.scrollTop = this._lastScrollPosition;
         }else {
             //scroll to selected element
-            const selectedElement = this._optionsUL.getElementsByClassName("tmDropdown-selected")[0];
+            const selectedElement = this._optionsUL.getElementsByClassName(tmdc.selected)[0];
 
             if (selectedElement) {
                 this._optionsUL.scrollTop = selectedElement.offsetTop - (this._optionsUL.offsetHeight / 2);
@@ -217,7 +217,7 @@ class TmDropdown {
         //if select is single, the next open() will calculate the position to the selected element
         this.isMultiple && (this._lastScrollPosition = this._optionsUL.scrollTop);
         
-        this._dropdown.classList.remove("tmDropdown-open", "tmDropdown-open-top");
+        this._dropdown.classList.remove(tmdc.open, tmdc.openTop);
         this._dropdown.appendChild(this._optionsUL);
         this._optionsUL.style.cssText = '';
     }
@@ -235,7 +235,7 @@ class TmDropdown {
      * triggers those callbacks
      */
     toggle() {
-        this._dropdown.classList.contains("tmDropdown-open") && this.close() || this.open();
+        this._dropdown.classList.contains(tmdc.open) && this.close() || this.open();
     }
 
     /**
@@ -309,9 +309,8 @@ class TmDropdown {
         const current = this._current = this._buildCurrent(select);
         const ul = this._optionsUL = this._buildOptionsList(select);
 
-        wrapper.className = 'tmDropdown-wrapper ' + this.getOption("wrapperClass");
-        this.isMultiple && wrapper.classList.add('tmDropdown-multiple');
-        //wrapper.className += this.isMultiple ? 'tmDropdown-multiple' : '';
+        wrapper.className = tmdc.wrapper+' ' + this.getOption("wrapperClass");
+        this.isMultiple && wrapper.classList.add(tmdc.multi);
         //If the select doesnt have any options, set auto width
         wrapper.style.width = select.children.length ? this.getOption("width") : 'auto';
         wrapper.appendChild(current);
@@ -328,7 +327,7 @@ class TmDropdown {
     _buildCurrent(select) {
         const create = document.createElement.bind(document);
         const current = create("a");
-        current.className = 'tmDropdown-current';
+        current.className = tmdc.current;
         current.tabIndex = this._domElement.tabIndex;
         if (select.multiple) {
             if(select.selectedOptions.length !== 0){
@@ -336,7 +335,7 @@ class TmDropdown {
                     const element = create("div");
                     element.option = option;
                     element.textContent = option.textContent;
-                    element.className = "tmDropdown-current-item";
+                    element.className = tmdc.currentItem;
                     element.addEventListener("click",this._selectByClickEvent.bind(this));
                     current.appendChild(element);
                 },this);
@@ -363,7 +362,7 @@ class TmDropdown {
      */
     _buildOptionsList(select) {
         const ul = document.createElement("ul");
-        ul.className = 'tmDropdown-ul';
+        ul.className = tmdc.optList;
 
         const children = select.children;
         Array.prototype.map.call( children, function(child){
@@ -389,12 +388,12 @@ class TmDropdown {
      */
     _buildOption(option) {
         const li = document.createElement("li"),
-              selected = option.selected && ' tmDropdown-selected' || '',
-              disabled = option.disabled && ' tmDropdown-disabled' || '',
-              hovered = option === this._lastSelectedOption && ' tmDropdown-hover' || '';
+              selected = option.selected && ' '+tmdc.selected || '',
+              disabled = option.disabled && ' '+tmdc.disabled || '',
+              hovered = option === this._lastSelectedOption && ' '+tmdc.hover || '';
         li.option = option;
         li.textContent = option.textContent;
-        li.className = 'tmDropdown-li' + selected + disabled + hovered;
+        li.className = tmdc.option + selected + disabled + hovered;
         li.dataset.value = option.value;
         return li;
     }
@@ -416,10 +415,10 @@ class TmDropdown {
                 label = create("div"),
                 ul = create("ul");
 
-        li.className = "tmDropdown-optgroup";
-        label.className = "tmDropdown-optgroup-label";
+        li.className = tmdc.optGroup;
+        label.className = tmdc.optGroupLabel;
         label.textContent = optgroup.label;
-        ul.className = "tmDropdown-optgroup-options";
+        ul.className = tmdc.optGroupList;
         Array.prototype.map.call(options,function(option){
              ul.append(this._buildOption(option));
         },this);
@@ -448,13 +447,13 @@ class TmDropdown {
     }
     
     _onFocusin(){
-        this._dropdown.classList.add('tmDropdown-focused');
+        this._dropdown.classList.add(tmdc.focused);
         //this.open();
     }
     
     _onFocusout(){
         if(!this._listClicked){
-            this._dropdown.classList.remove('tmDropdown-focused');
+            this._dropdown.classList.remove(tmdc.focused);
             this.close();
         }
         this._listClicked = false;
@@ -486,24 +485,24 @@ class TmDropdown {
         const hovered = this.hoveredElement;
         let newHover;
         if(!hovered){
-            newHover = optlist.firstChild.classList.contains('tmDropdown-li') ? optlist.firstChild : optlist.firstChild.firstChild;
-            newHover.classList.add('tmDropdown-hover');
+            newHover = optlist.firstChild.classList.contains(tmdc.option) ? optlist.firstChild : optlist.firstChild.firstChild;
+            newHover.classList.add(tmdc.hover);
         }else{
             newHover = hovered[sibling];
-            if(!newHover && hovered.parentElement.parentElement.classList.contains('tmDropdown-optgroup')){
+            if(!newHover && hovered.parentElement.parentElement.classList.contains(tmdc.optGroup)){
                     newHover = hovered.parentElement.parentElement[sibling];
             }
             if(newHover){
-                while(newHover && newHover.classList.contains('tmDropdown-optgroup') && !newHover.children[1][child]){
+                while(newHover && newHover.classList.contains(tmdc.optGroup) && !newHover.children[1][child]){
                     newHover = newHover[sibling];
                 }
-                if(newHover.classList.contains('tmDropdown-optgroup')){
+                if(newHover.classList.contains(tmdc.optGroup)){
                     newHover = newHover.children[1][child];
                 }
             }
             if(newHover){
-                hovered.classList.remove('tmDropdown-hover');
-                newHover.classList.add('tmDropdown-hover');
+                hovered.classList.remove(tmdc.hover);
+                newHover.classList.add(tmdc.hover);
             }
             this._optionsUL.scrollTop = newHover.offsetTop - (this._optionsUL.offsetHeight / 2);
         }
@@ -519,7 +518,7 @@ class TmDropdown {
         const option = li.option;
         if (!option.disabled) {
             
-            li.classList.toggle("tmDropdown-selected");
+            li.classList.toggle(tmdc.selected);
             let oldScroll = this._optionsUL.scrollTop;
             this.select(option);
             this.isMultiple && this.open(oldScroll);// = oldScroll;
@@ -534,7 +533,7 @@ class TmDropdown {
         }
         const option = hovered.option;
         if (!option.disabled) {            
-            hovered.classList.toggle("tmDropdown-selected");
+            hovered.classList.toggle(tmdc.selected);
             let oldScroll = this._optionsUL.scrollTop;
             this._lastSelectedOption = option;
             this.select(option);
@@ -549,16 +548,16 @@ class TmDropdown {
     
     _listMouseover(event){
         const tcl = event.target.classList;
-        Array.prototype.map.call(this._optionsUL.getElementsByClassName('tmDropdown-hover'),function(li){
-            li.classList.remove('tmDropdown-hover');
+        Array.prototype.map.call(this._optionsUL.getElementsByClassName(tmdc.hover),function(li){
+            li.classList.remove(tmdc.hover);
         });
-        if(tcl.contains('tmDropdown-li')){
-            tcl.add('tmDropdown-hover');
+        if(tcl.contains(tmdc.option)){
+            tcl.add(tmdc.hover);
         }
     }
     
     _listMouseout(event){
-       event.target.classList.remove('tmDropdown-hover');
+       event.target.classList.remove(tmdc.hover);
     }
     
 }

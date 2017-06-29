@@ -31,6 +31,7 @@ module.exports = function (grunt) {
             jsmain: {
                 src: [
                     '<%=src%>/js/tmd-config.js', //default TmDropdown configuration
+                    '<%=src%>/js/tmd-css-classes.js', //default TmDropdown configuration
                     '<%=src%>/js/tmd-class.js', //class file
                     '<%=src%>/js/tmd-jquery-plugin.js' //jquery integration plugin
                 ],
