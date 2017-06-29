@@ -1,6 +1,6 @@
 {
   "name": "tmdropdown",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "TmDropdown is a Javascript plugin that allows to use advanced Select Dropdowns, that have much more styling possibilities. This works better with jQuery, but works fine without it as well.",
   "authors": [
     "Daniel Schuster"

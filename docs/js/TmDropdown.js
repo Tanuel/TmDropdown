@@ -1,4 +1,4 @@
-/*! TmDropdown v0.6.0
+/*! TmDropdown v0.6.1
  *(C)  2017
  *https://tanuel.github.io/TmDropdown/ */
 ;(function (window,document) {
@@ -406,7 +406,6 @@ class TmDropdown {
         current.tabIndex = this._domElement.tabIndex;
         if (select.multiple) {
             if(select.selectedOptions.length !== 0){
-                //for(const option of select.selectedOptions){
                 Array.prototype.map.call(select.selectedOptions,function(option){
                     const element = create("div");
                     element.option = option;
@@ -414,8 +413,7 @@ class TmDropdown {
                     element.className = "tmDropdown-current-item";
                     element.addEventListener("click",this._selectByClickEvent.bind(this));
                     current.appendChild(element);
-                },this)
-                //}
+                },this);
             }else{
                 current.textContent = select.options.length ? this.getOption("placeholder") : this.getOption("emptyText");
             }
@@ -449,14 +447,6 @@ class TmDropdown {
                 ul.appendChild(this._buildOptgroup(child));
             }
         },this);
-        /*for (const child of children) {
-            
-            if (child.tagName === 'OPTION') {
-                ul.appendChild(this._buildOption(child));
-            } else if (child.tagName === 'OPTGROUP') {
-                ul.appendChild(this._buildOptgroup(child));
-            }
-        }*/
 
         ul.addEventListener("click", this._selectByClickEvent.bind(this), true);
         //ul.addEventListener("scroll",function(event){event.stopPropagation();});
@@ -507,9 +497,6 @@ class TmDropdown {
         Array.prototype.map.call(options,function(option){
              ul.append(this._buildOption(option));
         },this);
-        /*for (const option of options) {
-            ul.append(this._buildOption(option));
-        }*/
 
         li.append(label);
         li.append(ul);
@@ -639,9 +626,6 @@ class TmDropdown {
         Array.prototype.map.call(this._optionsUL.getElementsByClassName('tmDropdown-hover'),function(li){
             li.classList.remove('tmDropdown-hover');
         });
-        /*for(const li of this._optionsUL.getElementsByClassName('tmDropdown-hover')){
-            li.classList.remove('tmDropdown-hover');
-        }*/
         if(tcl.contains('tmDropdown-li')){
             tcl.add('tmDropdown-hover');
         }
