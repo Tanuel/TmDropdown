@@ -1,6 +1,6 @@
-/*! TmDropdown v0.6.1
- *(C)  2017
- *https://tanuel.github.io/TmDropdown/ */
+/*! TmDropdown v0.6.2
+ * (C)  2017
+* https://tanuel.github.io/TmDropdown/*/
 ;(function (window,document) {
 	"use strict";
 const __map = Array.prototype.map;
@@ -14,6 +14,22 @@ const __create = function (nodeName, properties = {}) {
     const node = document.createElement(nodeName);
     Object.assign(node,properties);
     return node;
+};
+
+/**
+ * Wrapper function for callbacks. Checks if the callback is a function and 
+ * then calls it
+ * Imporant: call this function via the call param and set the class instance of TmDropdown as this
+ * @param {string} name
+ * Name of callback (without on, like "Open" or "Rendered")
+ * @param {mixed} param
+ * a secondary parameter to be passed to the callback
+ * @returns {mixed}
+ * returns the return value of the callback
+ */
+const __callCallback = function(name, param = undefined) {
+    const onFn = this.getOption("on" + name);
+    (typeof onFn === 'function') && onFn.call(this._domElement, this, param);
 };
 /** ----- TmDropdown default configuration ----- 
  * default configuration/options for TmDropdown
@@ -159,6 +175,296 @@ class TmDropdownDelegator {
 }
 //define tmDropdownDelegator in local scope since it is only used internally
 const tmDropdownDelegator = new TmDropdownDelegator();
+/* global __map,tmdc*/
+
+/**
+ * Builds the dropdown DOM element
+ * 
+ * @param {TmDropdown} tmd - TmDropdown instance to build the dropdown for
+ * @returns {Element}
+ * HTML div element with dropdown content
+ * @internal
+ */
+const __buildDropdown = function (tmd) {
+    const select = tmd._domElement;
+    const wrapper = __create("div");
+    const current = tmd._current = __buildCurrent(tmd, select);
+    const ul = tmd._optionsUL = __buildOptionsList(tmd, select);
+
+    wrapper.className = tmdc.wrapper + ' ' + tmd.getOption("wrapperClass");
+    tmd.isMultiple && wrapper.classList.add(tmdc.multi);
+    //If the select doesnt have any options, set auto width
+    wrapper.style.width = select.children.length ? tmd.getOption("width") : 'auto';
+    wrapper.appendChild(current);
+    wrapper.appendChild(ul);
+    __bindDropdownEvents(tmd,wrapper, ul);
+    return wrapper;
+};
+
+/**
+ * Build the tmDropdown-current element from the select
+ * @param {TmDropdown} tmd - TmDropdown instance to build the dropdown for
+ * @param {HTMLSelectElement} select
+ * @returns {HTMLDivElement}
+ */
+const __buildCurrent = function (tmd, select) {
+    const current = __create("a", {
+        className: tmdc.current,
+        tabIndex: tmd._domElement.tabIndex
+    });
+    //current.className = tmdc.current;
+    //current.tabIndex = this._domElement.tabIndex;
+    if (select.multiple) {
+        if (select.selectedOptions.length !== 0) {
+            __map.call(select.selectedOptions, function (option) {
+                const element = __create("div", {
+                    option: option,
+                    textContent: option.textContent,
+                    className: tmdc.currentItem
+                });
+                element.addEventListener("click", __selectByKeyDown.bind(this));
+                current.appendChild(element);
+            }, tmd);
+        } else {
+            current.textContent = select.options.length ? tmd.getOption("placeholder") : tmd.getOption("emptyText");
+        }
+    } else {
+        //if the select doesnt have any options, set placeholder text
+        if (select.selectedIndex !== -1) {
+            current.textContent = select.options[select.selectedIndex].textContent;
+        } else {
+            current.textContent = select.options.length ? tmd.getOption("placeholder") : tmd.getOption("emptyText");
+        }
+    }
+
+    current.addEventListener("click", tmd.toggle.bind(tmd));
+    return current;
+};
+
+/**
+ * Build the options list
+ * @param {TmDropdown} tmd - TmDropdown instance to build the dropdown for
+ * @param {HTMLSelectElement} select
+ * @returns {HTMLUlElement}
+ */
+const __buildOptionsList = function (tmd, select) {
+    const ul = __create("ul", {className: tmdc.optList});
+
+    const children = select.children;
+    __map.call(children, function (child) {
+        if (child.tagName === 'OPTION') {
+            ul.appendChild(__buildOption(tmd, child));
+        } else if (child.tagName === 'OPTGROUP') {
+            ul.appendChild(__buildOptgroup(tmd, child));
+        }
+    });
+
+    ul.addEventListener("click", __selectByKeyDown.bind(tmd), true);
+    //ul.addEventListener("scroll",function(event){event.stopPropagation();});
+    return ul;
+};
+
+/**
+ * Create a list element for an option
+ * @param {TmDropdown} tmd - TmDropdown instance to build the dropdown for
+ * @param {Element|option} option
+ * A HTML Option Element
+ * @returns {Element|TmDropdown._buildOption.li}
+ * @internal
+ */
+const __buildOption = function (tmd, option) {
+    const selected = option.selected && ' ' + tmdc.selected || '',
+            disabled = option.disabled && ' ' + tmdc.disabled || '',
+            hovered = option === tmd._lastSelectedOption && ' ' + tmdc.hover || '',
+            li = __create("li", {
+                option: option,
+                textContent: option.textContent,
+                className: tmdc.option + selected + disabled + hovered
+            });
+    return li;
+};
+
+/**
+ * will create a list element for an optgroup
+ * iterates through children to find options
+ * This method will call __buildOption to generate the option list elements
+ * 
+ * @param {TmDropdown} tmd - TmDropdown instance to build the dropdown for
+ * @param {HTMLOptgroupElement} optgroup
+ * a html optgroup element
+ * @returns {TmDropdown._buildOptgroup.li|Element}
+ * @internal
+ */
+const __buildOptgroup = function (tmd, optgroup) {
+    const options = optgroup.children,
+            li = __create("li", {className: tmdc.optGroup}),
+            label = __create("div", {
+                className: tmdc.optGroupLabel,
+                textContent: optgroup.label
+            }),
+            ul = __create("ul", {className: tmdc.optGroupList});
+
+    __map.call(options, function (option) {
+        ul.append(__buildOption(tmd, option));
+    });
+
+    li.append(label);
+    li.append(ul);
+
+    return li;
+};
+
+
+/*---- dropdown utility events ----*/
+/**
+ * @param {TmDropdown} tmd - Instance of TmDropdown
+ * @param {HTMLDivElement} wrapper - the wrapper for the dropdown
+ * @param {HTMLUlElement} optList - the wrapper for options
+ * @returns {HTMLDivElement|wrapper}
+ */
+const __bindDropdownEvents = function (tmd,wrapper, optList) {
+    wrapper.addEventListener('keydown', __onKeydown.bind(tmd));
+    wrapper.addEventListener('focusin', __onFocusin.bind(tmd));
+    wrapper.addEventListener('focusout', __onFocusout.bind(tmd));
+    optList.addEventListener('mouseover', __listMouseover.bind(tmd));
+    optList.addEventListener('mouseout', __listMouseout.bind(tmd));
+    optList.addEventListener('mousedown', __listMousedown.bind(tmd));
+    return wrapper;
+};
+
+const __onFocusin = function () {
+    this._dropdown.classList.add(tmdc.focused);
+    //this.open();
+};
+
+const __onFocusout = function () {
+    if (!this._listClicked) {
+        this._dropdown.classList.remove(tmdc.focused);
+        this.close();
+    }
+    this._listClicked = false;
+};
+
+const __onKeydown = function (event) {
+    const key = event.keyCode || event.which;
+    switch (key) {
+
+        case 38: //arrow up
+            __navigate.call(this,event, "up");
+            break;
+        case 40: //arrow down
+            __navigate.call(this,event, "down");
+            break;
+        case 32: //spacebar
+        case 13: //enter
+            this.isOpen ? __selectByKeyDown.call(this) : this.open();
+            break;
+        case 27://escape
+            this.close();
+            break;
+    }
+};
+const __navigate = function (event, direction) {
+    event.preventDefault();
+    if (!this.isOpen) {
+        this.open();
+        return;
+    }
+    const child = direction === 'up' ? "lastChild" : "firstChild";
+    const sibling = direction === 'up' ? "previousElementSibling" : "nextElementSibling";
+    const optlist = this._optionsUL;
+    //currently hovered element
+    const hovered = this.hoveredElement;
+    let newHover;
+    if (!hovered) {
+        newHover = optlist.firstChild.classList.contains(tmdc.option) ? optlist.firstChild : optlist.firstChild.firstChild;
+        newHover.classList.add(tmdc.hover);
+    } else {
+        newHover = hovered[sibling];
+        if (!newHover && hovered.parentElement.parentElement.classList.contains(tmdc.optGroup)) {
+            newHover = hovered.parentElement.parentElement[sibling];
+        }
+        if (newHover) {
+            while (newHover && newHover.classList.contains(tmdc.optGroup) && !newHover.children[1][child]) {
+                newHover = newHover[sibling];
+            }
+            if (newHover.classList.contains(tmdc.optGroup)) {
+                newHover = newHover.children[1][child];
+            }
+        }
+        if (newHover) {
+            hovered.classList.remove(tmdc.hover);
+            newHover.classList.add(tmdc.hover);
+            
+            if(this.isMultiple){
+                this._optionsUL.scrollTop = newHover.offsetTop - (this._optionsUL.offsetHeight / 2);
+            }else{
+                !newHover.option.disabled && __selectByNavigation.call(this,newHover.option);
+            }
+            
+            
+        }
+        
+    }
+};
+
+/**
+ * Event handler for when the user clicks a 
+ * @param {Event|Click} event - Click Event object
+ */
+const __selectByClickEvent = function (event) {
+    //get option assigned to element in _buildOption()
+    const li = event.target;
+    const option = li.option;
+    if (!option.disabled) {
+
+        li.classList.toggle(tmdc.selected);
+        let oldScroll = this._optionsUL.scrollTop;
+        this.select(option);
+        this.isMultiple && this.open(oldScroll);// = oldScroll;
+        this.focus();
+    }
+};
+
+const __selectByKeyDown = function () {
+    const hovered = this.hoveredElement;
+    if (!hovered) {
+        return;
+    }
+    const option = hovered.option;
+    if (!option.disabled) {
+        hovered.classList.toggle(tmdc.selected);
+        let oldScroll = this._optionsUL.scrollTop;
+        this._lastSelectedOption = option;
+        this.select(option);
+        this.isMultiple && this.open(oldScroll);// = oldScroll;
+        this.focus();
+    }
+};
+
+const __selectByNavigation = function(option){
+    this.select(option);
+    this.focus();
+    this.open();
+};
+
+const __listMousedown = function () {
+    this._listClicked = true;
+};
+
+const __listMouseover = function (event) {
+    const tcl = event.target.classList;
+    __map.call(this._optionsUL.getElementsByClassName(tmdc.hover), function (li) {
+        li.classList.remove(tmdc.hover);
+    });
+    if (tcl.contains(tmdc.option)) {
+        tcl.add(tmdc.hover);
+    }
+};
+
+const __listMouseout = function (event) {
+    event.target.classList.remove(tmdc.hover);
+};
 /* global tmdc, TmDropdownConfig, tmDropdownDelegator, __map, __create */
 
 /** ----- TmDropdown main class ----- 
@@ -180,7 +486,7 @@ class TmDropdown {
         this._domElement = domElement;
         this._options = (typeof options === 'object') && Object.assign({}, TmDropdownConfig, options) || {};
 
-        this._dropdown = this._buildDropdown();
+        this._dropdown = __buildDropdown(this);//this._buildDropdown();
         Object.assign(domElement.style, {
             visibility: "hidden",
             position: "absolute"
@@ -191,7 +497,7 @@ class TmDropdown {
         tmDropdownDelegator.add(this);
 
         if (this.getOption("observe")) {
-            let obs = new MutationObserver(this._sourceMutated.bind(this));
+            let obs = new MutationObserver(this.refresh.bind(this));
             var config = {
                 attributes: true,
                 childList: true,
@@ -202,7 +508,7 @@ class TmDropdown {
             this._observer = obs;
         }
 
-        this._callCallback("Rendered");
+         __callCallback.call(this,"Rendered");
     }
 
     /**
@@ -273,21 +579,6 @@ class TmDropdown {
     }
 
     /**
-     * Wrapper function for callbacks. Checks if the callback is a function and 
-     * then calls it
-     * @param {string} name
-     * Name of callback (without on, like "Open" or "Rendered")
-     * @param {mixed} param
-     * a secondary parameter to be passed to the callback
-     * @returns {mixed}
-     * returns the return value of the callback
-     */
-    _callCallback(name, param = undefined) {
-        const onFn = this.getOption("on" + name);
-        (typeof onFn === 'function') && onFn.call(this._domElement, this, param);
-    }
-
-    /**
      * get an option
      * @param {string} key
      * @returns {string} option value
@@ -344,7 +635,7 @@ class TmDropdown {
      * @param {number} scrollPosition (optional) - scroll list to position
      */
     open(scrollPosition = undefined) {
-        if (this.isEmpty || this._callCallback("Open") === false) {
+        if (this.isEmpty ||  __callCallback.call(this,"Open") === false) {
             return;
         }
 
@@ -371,7 +662,7 @@ class TmDropdown {
      * The onClose callback wont get called, if the Dropdown is already closed!
      */
     close() {
-        if (!this.isOpen || this._callCallback("Close") === false) {
+        if (!this.isOpen ||  __callCallback.call(this,"Close") === false) {
             return;
         }
 
@@ -406,10 +697,10 @@ class TmDropdown {
     refresh() {
         this._optionsUL.parentNode.removeChild(this._optionsUL);
         this._dropdown.parentNode.removeChild(this._dropdown);
-        this._dropdown = this._buildDropdown();
+        this._dropdown = __buildDropdown(this);//this._buildDropdown();
         this._domElement.parentNode.insertBefore(this._dropdown, this._domElement.nextSibling);
 
-        this._callCallback("Refresh");
+         __callCallback.call(this,"Refresh");
         return this;
     }
 
@@ -417,7 +708,7 @@ class TmDropdown {
      * Remove TmDropdown from DOM and show the select element
      */
     destroy() {
-        if (this._callCallback("Destroy") === false) {
+        if ( __callCallback.call(this,"Destroy") === false) {
             return;
         }
         this._dropdown.parentNode.removeChild(this._dropdown);
@@ -438,7 +729,7 @@ class TmDropdown {
     select(valueOrOption, refresh = true) {
 
         const vop = valueOrOption;
-        if (this._callCallback("OptionSelected", vop) === false) {
+        if ( __callCallback.call(this,"OptionSelected", vop) === false) {
             return;
         }
 
@@ -460,279 +751,7 @@ class TmDropdown {
         return this;
     }
 
-    /**
-     * Builds the dropdown DOM element
-     * 
-     * @returns {Element}
-     * HTML div element with dropdown content
-     * @internal
-     */
-    _buildDropdown() {
-        const select = this._domElement;
-        const wrapper = __create("div");
-        const current = this._current = this._buildCurrent(select);
-        const ul = this._optionsUL = this._buildOptionsList(select);
-
-        wrapper.className = tmdc.wrapper + ' ' + this.getOption("wrapperClass");
-        this.isMultiple && wrapper.classList.add(tmdc.multi);
-        //If the select doesnt have any options, set auto width
-        wrapper.style.width = select.children.length ? this.getOption("width") : 'auto';
-        wrapper.appendChild(current);
-        wrapper.appendChild(ul);
-        this._bindDropdownEvents(wrapper, ul);
-        return wrapper;
-    }
-
-    /**
-     * Build the tmDropdown-current element from the select
-     * @param {HTMLSelectElement} select
-     * @returns {HTMLDivElement}
-     */
-    _buildCurrent(select) {
-        const current = __create("a", {
-            className: tmdc.current,
-            tabIndex: this._domElement.tabIndex
-        });
-        //current.className = tmdc.current;
-        //current.tabIndex = this._domElement.tabIndex;
-        if (select.multiple) {
-            if (select.selectedOptions.length !== 0) {
-                __map.call(select.selectedOptions, function (option) {
-                    const element = __create("div", {
-                        option: option,
-                        textContent: option.textContent,
-                        className: tmdc.currentItem
-                    });
-                    element.addEventListener("click", this._selectByClickEvent.bind(this));
-                    current.appendChild(element);
-                }, this);
-            } else {
-                current.textContent = select.options.length ? this.getOption("placeholder") : this.getOption("emptyText");
-            }
-        } else {
-            //if the select doesnt have any options, set placeholder text
-            if (select.selectedIndex !== -1) {
-                current.textContent = select.options[select.selectedIndex].textContent;
-            } else {
-                current.textContent = select.options.length ? this.getOption("placeholder") : this.getOption("emptyText");
-            }
-        }
-
-        current.addEventListener("click", this.toggle.bind(this));
-        return current;
-    }
-
-    /**
-     * Build the options list
-     * @param {HTMLSelectElement} select
-     * @returns {HTMLUlElement}
-     */
-    _buildOptionsList(select) {
-        const ul = __create("ul", {className: tmdc.optList});
-
-        const children = select.children;
-        __map.call(children, function (child) {
-            if (child.tagName === 'OPTION') {
-                ul.appendChild(this._buildOption(child));
-            } else if (child.tagName === 'OPTGROUP') {
-                ul.appendChild(this._buildOptgroup(child));
-            }
-        }, this);
-
-        ul.addEventListener("click", this._selectByClickEvent.bind(this), true);
-        //ul.addEventListener("scroll",function(event){event.stopPropagation();});
-        return ul;
-    }
-
-    /**
-     * Create a list element for an option
-     * 
-     * @param {Element|option} option
-     * A HTML Option Element
-     * @returns {Element|TmDropdown._buildOption.li}
-     * @internal
-     */
-    _buildOption(option) {
-        const selected = option.selected && ' ' + tmdc.selected || '',
-                disabled = option.disabled && ' ' + tmdc.disabled || '',
-                hovered = option === this._lastSelectedOption && ' ' + tmdc.hover || '',
-                li = __create("li", {
-                    option: option,
-                    textContent: option.textContent,
-                    className: tmdc.option + selected + disabled + hovered
-                });
-        return li;
-    }
-
-    /**
-     * will create a list element for an optgroup
-     * iterates through children to find options
-     * This method will call _buildOption to generate the option list elements
-     * 
-     * @param {type} optgroup
-     * a html optgroup element
-     * @returns {TmDropdown._buildOptgroup.li|Element}
-     * @internal
-     */
-    _buildOptgroup(optgroup) {
-        const options = optgroup.children,
-                li = __create("li", {className: tmdc.optGroup}),
-                label = __create("div", {
-                    className: tmdc.optGroupLabel,
-                    textContent: optgroup.label
-                }),
-                ul = __create("ul", {className: tmdc.optGroupList});
-
-        __map.call(options, function (option) {
-            ul.append(this._buildOption(option));
-        }, this);
-
-        li.append(label);
-        li.append(ul);
-
-        return li;
-    }
-
-    /*---- dropdown utility events ----*/
-    /**
-     * 
-     * @param {HTMLDivElement} wrapper - the wrapper for the dropdown
-     * @param {HTMLUlElement} optList - the wrapper for options
-     * @returns {HTMLDivElement|wrapper}
-     */
-    _bindDropdownEvents(wrapper, optList) {
-        wrapper.addEventListener('keydown', this._onKeydown.bind(this));
-        wrapper.addEventListener('focusin', this._onFocusin.bind(this));
-        wrapper.addEventListener('focusout', this._onFocusout.bind(this));
-        optList.addEventListener('mouseover', this._listMouseover.bind(this));
-        optList.addEventListener('mouseout', this._listMouseout.bind(this));
-        optList.addEventListener('mousedown', this._listMousedown.bind(this));
-        return wrapper;
-    }
-
-    _onFocusin() {
-        this._dropdown.classList.add(tmdc.focused);
-        //this.open();
-    }
-
-    _onFocusout() {
-        if (!this._listClicked) {
-            this._dropdown.classList.remove(tmdc.focused);
-            this.close();
-        }
-        this._listClicked = false;
-    }
-
-    _onKeydown(event) {
-        const key = event.keyCode || event.which;
-        switch (key) {
-
-            case 38: //arrow up
-                this._navigate(event, "up");
-                break;
-            case 40: //arrow down
-                this._navigate(event, "down");
-                break;
-            case 32: //spacebar
-            case 13: //enter
-                this.isOpen ? this._selectByKeyDown() : this.open();
-                break;
-            case 27://escape
-                this.close();
-                break;
-        }
-    }
-    _navigate(event, direction) {
-        event.preventDefault();
-        if (!this.isOpen) {
-            this.open();
-            return;
-        }
-        const child = direction === 'up' ? "lastChild" : "firstChild";
-        const sibling = direction === 'up' ? "previousElementSibling" : "nextElementSibling";
-        const optlist = this._optionsUL;
-        //currently hovered element
-        const hovered = this.hoveredElement;
-        let newHover;
-        if (!hovered) {
-            newHover = optlist.firstChild.classList.contains(tmdc.option) ? optlist.firstChild : optlist.firstChild.firstChild;
-            newHover.classList.add(tmdc.hover);
-        } else {
-            newHover = hovered[sibling];
-            if (!newHover && hovered.parentElement.parentElement.classList.contains(tmdc.optGroup)) {
-                newHover = hovered.parentElement.parentElement[sibling];
-            }
-            if (newHover) {
-                while (newHover && newHover.classList.contains(tmdc.optGroup) && !newHover.children[1][child]) {
-                    newHover = newHover[sibling];
-                }
-                if (newHover.classList.contains(tmdc.optGroup)) {
-                    newHover = newHover.children[1][child];
-                }
-            }
-            if (newHover) {
-                hovered.classList.remove(tmdc.hover);
-                newHover.classList.add(tmdc.hover);
-            }
-            this._optionsUL.scrollTop = newHover.offsetTop - (this._optionsUL.offsetHeight / 2);
-        }
-    }
-
-    /**
-     * Event handler for when the user clicks a 
-     * @param {Event|Click} event - Click Event object
-     */
-    _selectByClickEvent(event) {
-        //get option assigned to element in _buildOption()
-        const li = event.target;
-        const option = li.option;
-        if (!option.disabled) {
-
-            li.classList.toggle(tmdc.selected);
-            let oldScroll = this._optionsUL.scrollTop;
-            this.select(option);
-            this.isMultiple && this.open(oldScroll);// = oldScroll;
-            this.focus();
-        }
-    }
-
-    _selectByKeyDown() {
-        const hovered = this.hoveredElement;
-        if (!hovered) {
-            return;
-        }
-        const option = hovered.option;
-        if (!option.disabled) {
-            hovered.classList.toggle(tmdc.selected);
-            let oldScroll = this._optionsUL.scrollTop;
-            this._lastSelectedOption = option;
-            this.select(option);
-            this.isMultiple && this.open(oldScroll);// = oldScroll;
-            this.focus();
-        }
-    }
-
-    _listMousedown() {
-        this._listClicked = true;
-    }
-
-    _listMouseover(event) {
-        const tcl = event.target.classList;
-        __map.call(this._optionsUL.getElementsByClassName(tmdc.hover), function (li) {
-            li.classList.remove(tmdc.hover);
-        });
-        if (tcl.contains(tmdc.option)) {
-            tcl.add(tmdc.hover);
-        }
-    }
-
-    _listMouseout(event) {
-        event.target.classList.remove(tmdc.hover);
-    }
-
-    _sourceMutated() {
-        this.refresh();
-    }
+    
 
 }
 //assign TmDropdown to window to make it global

@@ -6,7 +6,9 @@ module.exports = function (grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        jsBanner:'TmDropdown v<%=pkg.version%>\n *(C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n *<%=pkg.homepage%>',
+        jsBanner: '/*! TmDropdown v<%=pkg.version%>\n'+
+                   ' * (C) <%=pkg.author%> <%= grunt.template.today("yyyy") %>\n'
+                   +'* <%=pkg.homepage%>*/\n',
         src: 'src',
         dst: 'dist',
         bin: 'bin',
@@ -20,7 +22,7 @@ module.exports = function (grunt) {
                 src: ['<%=siteroot%>/*']
             },
             bin: {
-                src:['<%=bin%>/*']
+                src: ['<%=bin%>/*']
             }
         },
         concat: {
@@ -30,12 +32,13 @@ module.exports = function (grunt) {
                     '<%=src%>/js/tmd-config.js', //default TmDropdown configuration
                     '<%=src%>/js/tmd-css-classes.js', //TmDropdown css classes configuration
                     '<%=src%>/js/tmd-delegator.js', //event delegator for global events
+                    '<%=src%>/js/tmd-builder.js', //functions to build dropdown
                     '<%=src%>/js/tmd-class.js', //class file
                     '<%=src%>/js/tmd-jquery-plugin.js' //jquery integration plugin
                 ],
                 dest: '<%= dst %>/js/<%= projectName %>.js',
                 options: {
-                    banner: '/*! <%=jsBanner%> */\n;(function (window,document) {\n\t"use strict";\n',
+                    banner: '<%=jsBanner%>;(function (window,document) {\n\t"use strict";\n',
                     footer: '\n}).call(this,window,document);',
                     sourceMap: true
                 }
@@ -60,30 +63,30 @@ module.exports = function (grunt) {
             }
         },
         copy: {
-            dist:{
-                files:[
-                    {expand: true,cwd: '<%=src%>',src: 'css/img/*',dest: '<%=dst%>'}
+            dist: {
+                files: [
+                    {expand: true, cwd: '<%=src%>', src: 'css/img/*', dest: '<%=dst%>'}
                 ]
             },
             docs: {
-              files: [
-                  {expand: true,cwd: '<%= dst %>',src: 'css/**',dest: '<%=siteroot%>/'},
-                  {expand: true,cwd: '<%= dst %>',src: 'js/<%= projectName %>.js',dest: '<%=siteroot%>/'},
-                  {expand: true,cwd: '<%= dst %>',src: 'js/<%= projectName %>.js.map',dest: '<%=siteroot%>/'}
-              ]  
+                files: [
+                    {expand: true, cwd: '<%= dst %>', src: 'css/**', dest: '<%=siteroot%>/'},
+                    {expand: true, cwd: '<%= dst %>', src: 'js/<%= projectName %>.js', dest: '<%=siteroot%>/'},
+                    {expand: true, cwd: '<%= dst %>', src: 'js/<%= projectName %>.js.map', dest: '<%=siteroot%>/'}
+                ]
             },
             bin: {
-                files:[
-                  {expand: true,cwd: '<%= dst %>',src: 'css/**',dest: '<%=bin%>/'},
-                  {expand: true,cwd: '<%= src %>',src: 'scss/**',dest: '<%=bin%>/'},
-                  {expand: true,cwd: '<%= dst %>/js',src: '<%= projectName %>.js',dest: '<%=bin%>/',
-                      rename:function(dest,src){
-                          return dest+'<%=projectName%>-v<%=pkg.version%>.js'
-                      }
-                  },
-                  {expand: true,src: 'README.md',dest: '<%=bin%>/'},
-                  {expand: true,src: 'LICENSE',dest: '<%=bin%>/'},
-                  {expand: true,src: 'documentation.url',dest: '<%=bin%>/'},
+                files: [
+                    {expand: true, cwd: '<%= dst %>', src: 'css/**', dest: '<%=bin%>/'},
+                    {expand: true, cwd: '<%= src %>', src: 'scss/**', dest: '<%=bin%>/'},
+                    {expand: true, cwd: '<%= dst %>/js', src: '<%= projectName %>.js', dest: '<%=bin%>/',
+                        rename: function (dest, src) {
+                            return dest + '<%=projectName%>-v<%=pkg.version%>.js'
+                        }
+                    },
+                    {expand: true, src: 'README.md', dest: '<%=bin%>/'},
+                    {expand: true, src: 'LICENSE', dest: '<%=bin%>/'},
+                    {expand: true, src: 'documentation.url', dest: '<%=bin%>/'},
                 ]
             }
         },
@@ -99,18 +102,18 @@ module.exports = function (grunt) {
         },
         compress: {
             bin: {
-              options: {
-                archive: '<%=bin%>/<%=projectName%>-v<%=pkg.version%>.zip'
-              },
-              files: [
-                {expand:true,cwd: '<%=bin%>/',src: '**'}, // includes files in path and its subdirs
-                //{expand: true, cwd: 'path/', src: ['**'], dest: 'internal_folder3/'}, // makes all src relative to cwd
-                //{flatten: true, src: ['path/**'], dest: 'internal_folder4/', filter: 'isFile'} // flattens results to a single level
-              ]
+                options: {
+                    archive: '<%=bin%>/<%=projectName%>-v<%=pkg.version%>.zip'
+                },
+                files: [
+                    {expand: true, cwd: '<%=bin%>/', src: '**'}, // includes files in path and its subdirs
+                            //{expand: true, cwd: 'path/', src: ['**'], dest: 'internal_folder3/'}, // makes all src relative to cwd
+                            //{flatten: true, src: ['path/**'], dest: 'internal_folder4/', filter: 'isFile'} // flattens results to a single level
+                ]
             }
         },
         'closure-compiler': {
-            minify:{
+            minify: {
                 files: {
                     '<%=bin%>/<%=projectName%>-v<%= pkg.version %>.min.js': ['dist/js/<%=projectName%>.js']
                 },
@@ -154,8 +157,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-compress');
-    
+
     //grunt.registerTask('clean', ['clean']);
-    grunt.registerTask('build', ['concat', 'sass', 'copy:dist','copy:docs']);
-    grunt.registerTask('buildBinaries', ['clean:bin','copy:bin','closure-compiler:minify','closure-compiler:binProto','closure-compiler:binMinify','compress:bin']);
+    grunt.registerTask('build', ['concat', 'sass', 'copy:dist', 'copy:docs']);
+    grunt.registerTask('buildBinaries', ['clean:bin', 'copy:bin', 'closure-compiler:minify', 'closure-compiler:binProto', 'closure-compiler:binMinify', 'compress:bin']);
 };
